@@ -6,11 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GameViewController {
 
+    @GetMapping("/")
+    public String home() {
+        return "index";
+    }
+
     @GetMapping("/arcade")
     public String arcade() {
         return "index";
     }
-    
+
     @GetMapping("/game/tutorial")
     public String tutorialView() {
         return "TutorialMode";
