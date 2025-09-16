@@ -15,29 +15,11 @@
     }
 
     body {
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+      background: #0d1117;
       color: #f0f6fc;
       font-family: 'JetBrains Mono', 'Pretendard', monospace;
       min-height: 100vh;
       overflow-x: hidden;
-    }
-
-    .neon {
-      text-shadow: 
-        0 0 5px currentColor,
-        0 0 10px currentColor,
-        0 0 15px currentColor,
-        0 0 20px #00ff41;
-      animation: flicker 2s infinite alternate;
-    }
-
-    @keyframes flicker {
-      0%, 18%, 22%, 25%, 53%, 57%, 100% {
-        opacity: 1;
-      }
-      20%, 24%, 55% {
-        opacity: 0.8;
-      }
     }
 
     .hud {
@@ -64,7 +46,6 @@
       font-weight: 900;
       letter-spacing: 0.5px;
       color: #00ff41;
-      text-shadow: 0 0 10px #00ff41;
     }
 
     .badge {
@@ -153,17 +134,8 @@
       font-size: clamp(2.5rem, 8vw, 5rem);
       font-weight: 900;
       margin-bottom: 1rem;
-      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #ff6b6b);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow 4s ease-in-out infinite;
+      color: #58a6ff;
       line-height: 1.2;
-    }
-
-    @keyframes rainbow {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
     }
 
     .subtitle {
@@ -200,21 +172,11 @@
       padding: 12px 16px;
       animation: scroll 25s linear infinite;
       color: #7d8590;
-      background: linear-gradient(90deg, #7d8590, #00ff41, #58a6ff, #ff6b6b, #7d8590);
-      background-size: 200% 100%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: scroll 25s linear infinite, rainbow-text 3s ease infinite;
     }
 
     @keyframes scroll {
       from { transform: translateX(100%); }
       to { transform: translateX(-100%); }
-    }
-
-    @keyframes rainbow-text {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
     }
 
     .arcade-wrap {
@@ -231,7 +193,7 @@
     }
 
     .cabinet {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      background: #1c1c1c;
       border: 2px solid #404040;
       border-radius: 20px;
       padding: 1.5rem;
@@ -242,29 +204,10 @@
       color: inherit;
     }
 
-    .cabinet::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transform: translateX(-100%) translateY(-100%) rotate(45deg);
-      transition: transform 0.6s;
-    }
-
-    .cabinet:hover::before {
-      transform: translateX(100%) translateY(100%) rotate(45deg);
-    }
-
     .cabinet:hover {
       transform: translateY(-15px) scale(1.05);
       border-color: #58a6ff;
-      box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.4),
-        0 0 40px rgba(88, 166, 255, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
     }
 
     .cabinet-screen {
@@ -305,22 +248,22 @@
       pointer-events: none;
     }
 
-    .push-screen { background: linear-gradient(45deg, #2d5a27, #4a7c59); }
-    .cherry-screen { background: linear-gradient(45deg, #8b0000, #cd5c5c); }
-    .reset-screen { background: linear-gradient(45deg, #ff4500, #ff6347); }
-    .stash-screen { background: linear-gradient(45deg, #4169e1, #6495ed); }
-    .detached-screen { background: linear-gradient(45deg, #800080, #9370db); }
-    .merge-screen { background: linear-gradient(45deg, #ff1493, #ff69b4); }
-    .review-screen { background: linear-gradient(45deg, #ffa500, #ffb347); }
+    .push-screen { background: #2d5a27; }
+    .cherry-screen { background: #8b0000; }
+    .reset-screen { background: #ff4500; }
+    .stash-screen { background: #4169e1; }
+    .detached-screen { background: #800080; }
+    .merge-screen { background: #ff1493; }
+    .review-screen { background: #ffa500; }
+    .hotfix-screen { background: #dc2626; }
+    .tutorial-screen { background: #059669; }
 
     .cabinet-title {
       font-weight: 800;
       font-size: 1.5rem;
       margin-bottom: 0.5rem;
       text-align: center;
-      background: linear-gradient(45deg, #f0f6fc, #58a6ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #58a6ff;
     }
 
     .cabinet-meta {
@@ -333,7 +276,7 @@
 
     .btn-play {
       width: 100%;
-      background: linear-gradient(145deg, #ff4757, #ff3742);
+      background: #58a6ff;
       border: 0;
       color: #fff;
       border-radius: 12px;
@@ -344,30 +287,13 @@
       transition: all 0.3s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
-      position: relative;
-      overflow: hidden;
       font-family: 'JetBrains Mono', monospace;
     }
 
-    .btn-play::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-play:hover::before {
-      left: 100%;
-    }
-
     .btn-play:hover {
-      background: linear-gradient(145deg, #ff3742, #ff2838);
+      background: #4a90e2;
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(255, 71, 87, 0.4);
+      box-shadow: 0 8px 20px rgba(88, 166, 255, 0.3);
     }
 
     .btn-play:active {
@@ -393,7 +319,7 @@
     }
 
     .btn {
-      background: linear-gradient(145deg, #2b2b33, #404040);
+      background: #2b2b33;
       border: 1px solid #30363d;
       color: #f0f6fc;
       border-radius: 10px;
@@ -404,7 +330,7 @@
     }
 
     .btn:hover {
-      background: linear-gradient(145deg, #404040, #2b2b33);
+      background: #404040;
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
@@ -491,7 +417,7 @@
 
     .status-fill {
       height: 100%;
-      background: linear-gradient(90deg, #ff6b6b, #ffa500, #00ff41);
+      background: #58a6ff;
       border-radius: 2px;
       animation: pulse 2s infinite;
     }
@@ -507,7 +433,7 @@
   
   <header class="hud" id="hud">
     <div class="hud-left">
-      <div class="logo neon">GHC</div>
+      <div class="logo">GHC</div>
       <div class="badge">
         SCORE&nbsp;<span id="hud-score">1337</span>
         <span class="sublabel">pts</span>
@@ -521,21 +447,21 @@
   </header>
 
   <section class="title-section">
-    <h1 class="main-title neon">🎮 GIT HELL CARNIVAL</h1>
+    <h1 class="main-title">🎮 GIT HELL CARNIVAL</h1>
     <p class="subtitle">Welcome to developer nightmare</p>
   </section>
 
   <main class="arcade-wrap">
     <div class="marquee">
       <div class="marquee-line">
-        ★ GIT HELL CARNIVAL ★ PUSH & PRAY ★ CHERRY-PICK RUSH ★ RESET SIMULATOR ★ STASH PUZZLE ★ DETACHED HEAD RUNNER ★ MERGE vs REBASE ★ CODE REVIEW BATTLE ★ WHERE DEVELOPERS COME TO SUFFER ★
+        ★ GIT HELL CARNIVAL ★ PUSH & PRAY ★ CHERRY-PICK RUSH ★ RESET SIMULATOR ★ STASH PUZZLE ★ DETACHED HEAD RUNNER ★ MERGE vs REBASE ★ CODE REVIEW BATTLE ★ HOTFIX SPEEDRUN ★ REVERT TSUNAMI ★ WHERE DEVELOPERS COME TO SUFFER ★
       </div>
     </div>
 
     <section class="cabinet-grid">
       <a class="cabinet" href="/game/push">
         <div class="cabinet-screen push-screen">
-          <span class="neon">🙏</span>
+          <span>🙏</span>
         </div>
         <div class="cabinet-title">Push & Pray</div>
         <div class="cabinet-meta">러시안 룰렛식 CI</div>
@@ -550,7 +476,7 @@
 
       <a class="cabinet" href="/game/cherrypick">
         <div class="cabinet-screen cherry-screen">
-          <span class="neon">🍒</span>
+          <span>🍒</span>
         </div>
         <div class="cabinet-title">체리픽 러시</div>
         <div class="cabinet-meta">커밋 필터링 지옥</div>
@@ -565,7 +491,7 @@
 
       <a class="cabinet" href="/game/reset">
         <div class="cabinet-screen reset-screen">
-          <span class="neon">🔥</span>
+          <span>🔥</span>
         </div>
         <div class="cabinet-title">Reset 시뮬레이터</div>
         <div class="cabinet-meta">soft/mixed/hard</div>
@@ -580,7 +506,7 @@
 
       <a class="cabinet" href="/game/stash">
         <div class="cabinet-screen stash-screen">
-          <span class="neon">📦</span>
+          <span>📦</span>
         </div>
         <div class="cabinet-title">스태시 퍼즐</div>
         <div class="cabinet-meta">잊힌 코드 수색</div>
@@ -595,7 +521,7 @@
 
       <a class="cabinet" href="/game/detached">
         <div class="cabinet-screen detached-screen">
-          <span class="neon">🧑‍🦲</span>
+          <span>🧑‍🦲</span>
         </div>
         <div class="cabinet-title">Detached 러너</div>
         <div class="cabinet-meta">브랜치 착지 게임</div>
@@ -610,7 +536,7 @@
 
       <a class="cabinet" href="/game/merge">
         <div class="cabinet-screen merge-screen">
-          <span class="neon">⚔️</span>
+          <span>⚔️</span>
         </div>
         <div class="cabinet-title">Merge vs Rebase</div>
         <div class="cabinet-meta">전략 선택 배틀</div>
@@ -625,7 +551,7 @@
 
       <a class="cabinet" href="/game/review">
         <div class="cabinet-screen review-screen">
-          <span class="neon">🤡</span>
+          <span>🤡</span>
         </div>
         <div class="cabinet-title">코드 리뷰 배틀</div>
         <div class="cabinet-meta">리팩토링 점수전</div>
@@ -636,6 +562,51 @@
           </div>
         </div>
         <button class="btn-play">REVIEW</button>
+      </a>
+
+      <a class="cabinet" href="/game/hotfix">
+        <div class="cabinet-screen hotfix-screen">
+          <span>💣</span>
+        </div>
+        <div class="cabinet-title">Hotfix 스피드런</div>
+        <div class="cabinet-meta">긴급 수정 타임어택</div>
+        <div class="game-stats">
+          Server Status: DOWN
+          <div class="status-bar">
+            <div class="status-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+        <button class="btn-play">HOTFIX</button>
+      </a>
+
+      <a class="cabinet" href="/game/tsunami">
+        <div class="cabinet-screen tsunami-screen">
+          <span>🌊</span>
+        </div>
+        <div class="cabinet-title">Revert 쓰나미</div>
+        <div class="cabinet-meta">리듬 액션 게임</div>
+        <div class="game-stats">
+          Commit Flow: CHAOS
+          <div class="status-bar">
+            <div class="status-fill" style="width: 85%;"></div>
+          </div>
+        </div>
+        <button class="btn-play">SURVIVE</button>
+      </a>
+
+      <a class="cabinet" href="/game/tutorial">
+        <div class="cabinet-screen tutorial-screen">
+          <span>📚</span>
+        </div>
+        <div class="cabinet-title">튜토리얼 모드</div>
+        <div class="cabinet-meta">Git 기초부터 고급까지</div>
+        <div class="game-stats">
+          Learning Progress: 0%
+          <div class="status-bar">
+            <div class="status-fill" style="width: 0%;"></div>
+          </div>
+        </div>
+        <button class="btn-play">LEARN</button>
       </a>
     </section>
   </main>

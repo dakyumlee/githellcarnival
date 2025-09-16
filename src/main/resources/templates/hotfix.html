@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>💣 Hotfix 스피드런</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/arcade.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0d1117;
+      color: #f0f6fc;
+      font-family: 'JetBrains Mono', 'Pretendard', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .hud {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid #30363d;
+    }
+
+    .hud-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #00ff41;
+      font-size: 1.2rem;
+    }
+
+    .hud-home {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .hud-home:hover {
+      background: #404040;
+      transform: translateY(-2px);
+    }
+
+    .emergency-header {
+      background: #2a0a0a;
+      border: 2px solid #ff6b6b;
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem;
+      text-align: center;
+      animation: alert-pulse 1s infinite alternate;
+    }
+
+    @keyframes alert-pulse {
+      0% { background: #2a0a0a; border-color: #ff6b6b; }
+      100% { background: #3a1515; border-color: #ff8888; }
+    }
+
+    .emergency-title {
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 900;
+      color: #ff6b6b;
+      margin-bottom: 0.5rem;
+    }
+
+    .emergency-subtitle {
+      color: #ffa500;
+      font-size: 1.2rem;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .game-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .status-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .status-card {
+      background: #1c1c1c;
+      border: 2px solid #404040;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .status-card.critical {
+      border-color: #ff6b6b;
+      background: #2a0a0a;
+    }
+
+    .status-card.warning {
+      border-color: #ffa500;
+      background: #2a1a0a;
+    }
+
+    .status-title {
+      font-weight: 800;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .status-value {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .timer-display {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #ff6b6b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .users-count {
+      color: #ffa500;
+    }
+
+    .revenue-loss {
+      color: #ff6b6b;
+    }
+
+    .checklist-container {
+      background: #1c1c1c;
+      border: 1px solid #404040;
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .checklist-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      color: #f0f6fc;
+      text-align: center;
+    }
+
+    .checklist {
+      list-style: none;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      background: #2d2d2d;
+      border: 1px solid #404040;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .checklist-item:hover {
+      background: #3d3d3d;
+    }
+
+    .checklist-item.completed {
+      background: #0a2e0a;
+      border-color: #00ff41;
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #404040;
+      border-radius: 4px;
+      background: transparent;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox.checked {
+      background: #00ff41;
+      border-color: #00ff41;
+    }
+
+    .checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #000;
+      font-weight: 900;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .btn-start {
+      background: #ff6b6b;
+      color: #fff;
+    }
+
+    .btn-start:hover {
+      background: #ff5757;
+      transform: translateY(-2px);
+    }
+
+    .btn-start:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-reset {
+      background: #404040;
+      color: #f0f6fc;
+    }
+
+    .btn-reset:hover {
+      background: #555;
+      transform: translateY(-2px);
+    }
+
+    .result-panel {
+      background: #1c1c1c;
+      border: 2px solid #404040;
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+      display: none;
+    }
+
+    .result-panel.success {
+      border-color: #00ff41;
+      background: #0a2e0a;
+    }
+
+    .result-panel.failure {
+      border-color: #ff6b6b;
+      background: #2a0a0a;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .result-stat {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .server-status {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: rgba(13, 17, 23, 0.95);
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 10px 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .server-status.down {
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+
+    .server-status.up {
+      border-color: #00ff41;
+      color: #00ff41;
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        padding: 1rem;
+      }
+      
+      .status-panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<script src="/js/arcade.js"></script>
+<script>window.ghcMountHUD({ showHome:true });</script>
+<body>
+  <header class="hud" id="hud">
+    <div class="hud-left">
+      <a class="hud-home" href="/">← 로비</a>
+      <div class="logo">GHC</div>
+    </div>
+  </header>
+
+  <div class="server-status down" id="server-status">🔥 서버 다운</div>
+
+  <section class="emergency-header">
+    <h1 class="emergency-title">💣 EMERGENCY HOTFIX</h1>
+    <p class="emergency-subtitle">운영 서버 폭발! 즉시 수정 필요!</p>
+  </section>
+
+  <main class="game-container">
+    <div class="status-panel">
+      <div class="status-card critical">
+        <div class="status-title">⏰ 남은 시간</div>
+        <div class="status-value timer-display" id="timer">05:00</div>
+      </div>
+      
+      <div class="status-card warning">
+        <div class="status-title">👥 영향받는 사용자</div>
+        <div class="status-value users-count" id="users">12,547</div>
+      </div>
+      
+      <div class="status-card critical">
+        <div class="status-title">💸 손실액 (분당)</div>
+        <div class="status-value revenue-loss" id="revenue">$2,830</div>
+      </div>
+    </div>
+
+    <div class="checklist-container">
+      <div class="checklist-title">🚨 핫픽스 체크리스트</div>
+      <ul class="checklist" id="checklist">
+        <li class="checklist-item" data-step="1">
+          <div class="checkbox" id="check-1"></div>
+          <span>1. 에러 로그 확인 및 원인 파악</span>
+        </li>
+        <li class="checklist-item" data-step="2">
+          <div class="checkbox" id="check-2"></div>
+          <span>2. 핫픽스 브랜치 생성 (hotfix/critical-bug)</span>
+        </li>
+        <li class="checklist-item" data-step="3">
+          <div class="checkbox" id="check-3"></div>
+          <span>3. 최소한의 코드 수정으로 버그 픽스</span>
+        </li>
+        <li class="checklist-item" data-step="4">
+          <div class="checkbox" id="check-4"></div>
+          <span>4. 로컬 테스트 및 유닛 테스트 실행</span>
+        </li>
+        <li class="checklist-item" data-step="5">
+          <div class="checkbox" id="check-5"></div>
+          <span>5. 코드 리뷰 (간소화된 프로세스)</span>
+        </li>
+        <li class="checklist-item" data-step="6">
+          <div class="checkbox" id="check-6"></div>
+          <span>6. 스테이징 환경에 배포 및 테스트</span>
+        </li>
+        <li class="checklist-item" data-step="7">
+          <div class="checkbox" id="check-7"></div>
+          <span>7. 운영 환경에 핫픽스 배포</span>
+        </li>
+        <li class="checklist-item" data-step="8">
+          <div class="checkbox" id="check-8"></div>
+          <span>8. 서버 상태 모니터링 및 검증</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-start" id="start-btn">🚀 긴급 수정 시작!</button>
+      <button class="btn btn-reset" id="reset-btn">🔄 리셋</button>
+    </div>
+
+    <div class="result-panel" id="result-panel">
+      <div class="result-title" id="result-title"></div>
+      <div class="result-stats">
+        <div class="result-stat">
+          <div>완료 시간</div>
+          <div id="completion-time"></div>
+        </div>
+        <div class="result-stat">
+          <div>완료된 단계</div>
+          <div id="completed-steps"></div>
+        </div>
+        <div class="result-stat">
+          <div>총 손실액</div>
+          <div id="total-loss"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let gameState = {
+      isRunning: false,
+      timeLeft: 300,
+      completedSteps: 0,
+      totalSteps: 8,
+      startTime: null,
+      users: 12547,
+      revenuePerMinute: 2830
+    };
+
+    let gameTimer = null;
+    let stepTimers = [];
+
+    function updateTimer() {
+      if (!gameState.isRunning || gameState.timeLeft <= 0) return;
+      
+      gameState.timeLeft--;
+      
+      const minutes = Math.floor(gameState.timeLeft / 60);
+      const seconds = gameState.timeLeft % 60;
+      document.getElementById('timer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      gameState.users += Math.floor(Math.random() * 100);
+      document.getElementById('users').textContent = gameState.users.toLocaleString();
+      
+      if (gameState.timeLeft <= 0) {
+        endGame(false);
+      }
+    }
+
+    function startGame() {
+      gameState.isRunning = true;
+      gameState.startTime = Date.now();
+      gameState.timeLeft = 300;
+      gameState.completedSteps = 0;
+      
+      document.getElementById('start-btn').disabled = true;
+      document.getElementById('result-panel').style.display = 'none';
+      
+      for (let i = 1; i <= gameState.totalSteps; i++) {
+        const checkbox = document.getElementById(`check-${i}`);
+        const item = document.querySelector(`[data-step="${i}"]`);
+        checkbox.classList.remove('checked');
+        item.classList.remove('completed');
+      }
+      
+      gameTimer = setInterval(updateTimer, 1000);
+      
+      scheduleStepCompletions();
+    }
+
+    function scheduleStepCompletions() {
+      stepTimers = [];
+      const baseDelay = 15000;
+      
+      for (let i = 1; i <= gameState.totalSteps; i++) {
+        const delay = baseDelay * i + Math.random() * 10000;
+        
+        const timer = setTimeout(() => {
+          if (gameState.isRunning) {
+            completeStep(i);
+          }
+        }, delay);
+        
+        stepTimers.push(timer);
+      }
+    }
+
+    function completeStep(stepNumber) {
+      if (!gameState.isRunning) return;
+      
+      const checkbox = document.getElementById(`check-${stepNumber}`);
+      const item = document.querySelector(`[data-step="${stepNumber}"]`);
+      
+      checkbox.classList.add('checked');
+      item.classList.add('completed');
+      
+      gameState.completedSteps++;
+      
+      if (gameState.completedSteps >= gameState.totalSteps) {
+        endGame(true);
+      }
+    }
+
+    function endGame(success) {
+      gameState.isRunning = false;
+      clearInterval(gameTimer);
+      stepTimers.forEach(timer => clearTimeout(timer));
+      
+      document.getElementById('start-btn').disabled = false;
+      
+      const resultPanel = document.getElementById('result-panel');
+      const resultTitle = document.getElementById('result-title');
+      const serverStatus = document.getElementById('server-status');
+      
+      const elapsedTime = Date.now() - gameState.startTime;
+      const elapsedMinutes = Math.floor(elapsedTime / 60000);
+      const elapsedSeconds = Math.floor((elapsedTime % 60000) / 1000);
+      
+      const totalLoss = Math.floor((elapsedTime / 60000) * gameState.revenuePerMinute);
+      
+      document.getElementById('completion-time').textContent = 
+        `${elapsedMinutes}:${elapsedSeconds.toString().padStart(2, '0')}`;
+      document.getElementById('completed-steps').textContent = 
+        `${gameState.completedSteps}/${gameState.totalSteps}`;
+      document.getElementById('total-loss').textContent = `$${totalLoss.toLocaleString()}`;
+      
+      if (success) {
+        resultPanel.className = 'result-panel success';
+        resultTitle.textContent = '🎉 핫픽스 성공!';
+        resultTitle.style.color = '#00ff41';
+        serverStatus.textContent = '✅ 서버 정상';
+        serverStatus.className = 'server-status up';
+        
+        let score = 100;
+        if (elapsedMinutes < 3) score += 50;
+        if (elapsedMinutes < 2) score += 100;
+        
+        if (window.ghcAddScore) {
+          window.ghcAddScore(score);
+        }
+        if (window.ghcUnlock) {
+          window.ghcUnlock('hotfix-hero', '핫픽스 영웅', 'good');
+        }
+      } else {
+        resultPanel.className = 'result-panel failure';
+        resultTitle.textContent = '💥 시간 초과!';
+        resultTitle.style.color = '#ff6b6b';
+        serverStatus.textContent = '💀 서버 사망';
+        serverStatus.className = 'server-status down';
+        
+        if (window.ghcUnlock) {
+          window.ghcUnlock('server-killer', '서버 킬러', 'bad');
+        }
+      }
+      
+      resultPanel.style.display = 'block';
+    }
+
+    function resetGame() {
+      gameState.isRunning = false;
+      clearInterval(gameTimer);
+      stepTimers.forEach(timer => clearTimeout(timer));
+      
+      gameState.timeLeft = 300;
+      gameState.completedSteps = 0;
+      gameState.users = 12547;
+      
+      document.getElementById('timer').textContent = '05:00';
+      document.getElementById('users').textContent = '12,547';
+      document.getElementById('start-btn').disabled = false;
+      document.getElementById('result-panel').style.display = 'none';
+      document.getElementById('server-status').textContent = '🔥 서버 다운';
+      document.getElementById('server-status').className = 'server-status down';
+      
+      for (let i = 1; i <= gameState.totalSteps; i++) {
+        const checkbox = document.getElementById(`check-${i}`);
+        const item = document.querySelector(`[data-step="${i}"]`);
+        checkbox.classList.remove('checked');
+        item.classList.remove('completed');
+      }
+    }
+
+    document.querySelectorAll('.checklist-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (!gameState.isRunning) return;
+        
+        const stepNumber = parseInt(item.dataset.step);
+        const checkbox = document.getElementById(`check-${stepNumber}`);
+        
+        if (!checkbox.classList.contains('checked')) {
+          completeStep(stepNumber);
+        }
+      });
+    });
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('reset-btn').addEventListener('click', resetGame);
+
+    document.getElementById('users').textContent = gameState.users.toLocaleString();
+    document.getElementById('revenue').textContent = `$${gameState.revenuePerMinute.toLocaleString()}`;
+  </script>
+</body>
+</html>

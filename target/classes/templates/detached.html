@@ -2,154 +2,920 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-<title>🧑‍🦲 Detached HEAD 러너</title>
+  <title>🧑‍🦲 Detached HEAD 러너</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="/css/arcade.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background: #111;
-      color: #fff;
-      font-family: Pretendard, sans-serif;
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+      color: #f0f6fc;
+      font-family: 'JetBrains Mono', 'Pretendard', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 40% 60%, rgba(128, 0, 128, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 60% 40%, rgba(147, 112, 219, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .hud {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid #30363d;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #00ff41;
+      font-size: 1.2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px solid #30363d;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+    }
+
+    .hud-home {
+      background: linear-gradient(145deg, #21262d, #404040);
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .hud-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .achv {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px dashed #30363d;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .title-section {
       text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: relative;
       overflow: hidden;
     }
 
-    #game-area {
+    .main-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #800080, #9370db, #dda0dd, #800080);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: void-gradient 3s ease-in-out infinite;
+    }
+
+    @keyframes void-gradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      color: #7d8590;
+      font-size: 1.2rem;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .game-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .void-space {
+      background: linear-gradient(145deg, #1a0d1a, #2e162e);
+      border: 3px solid #800080;
+      border-radius: 25px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+      box-shadow: 
+          0 0 50px rgba(128, 0, 128, 0.3),
+          inset 0 0 30px rgba(147, 112, 219, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .void-space::before {
+      content: '🌌';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      background: linear-gradient(145deg, #1a0d1a, #2e162e);
+      padding: 0 20px;
+      border: 2px solid #800080;
+      border-radius: 50%;
+    }
+
+    .head-runner {
+      font-size: 4rem;
+      margin: 1rem 0;
+      filter: drop-shadow(0 0 20px currentColor);
+      transition: all 0.3s ease;
+    }
+
+    .head-runner.lost { 
+      color: #9370db; 
+      animation: lost-float 3s infinite ease-in-out;
+    }
+    
+    .head-runner.jumping { 
+      color: #dda0dd; 
+      animation: jump-boost 0.5s ease-out;
+      transform: translateY(-50px);
+    }
+    
+    .head-runner.landed { 
+      color: #00ff41; 
+      animation: success-glow 1s ease-in-out;
+    }
+
+    .head-runner.crashed { 
+      color: #ff6b6b; 
+      animation: crash-spin 1s ease-out;
+    }
+
+    @keyframes lost-float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes jump-boost {
+      0% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-30px) scale(1.2); }
+      100% { transform: translateY(-50px) scale(1); }
+    }
+
+    @keyframes success-glow {
+      0%, 100% { filter: drop-shadow(0 0 20px currentColor); }
+      50% { filter: drop-shadow(0 0 40px currentColor); }
+    }
+
+    @keyframes crash-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(720deg); }
+    }
+
+    .game-area {
       position: relative;
       width: 100%;
-      height: 300px;
-      background: #222;
-      margin-top: 20px;
+      height: 400px;
+      background: linear-gradient(180deg, #1a0d2e 0%, #2a1a4a 50%, #1a0d2e 100%);
+      border: 2px solid #30363d;
+      border-radius: 15px;
+      margin: 2rem 0;
       overflow: hidden;
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
     }
 
-    #head {
+    .game-area::before {
+      content: '';
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      font-size: 48px;
-      transition: bottom 0.2s;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 50px,
+          rgba(147, 112, 219, 0.1) 51px,
+          rgba(147, 112, 219, 0.1) 52px
+        );
+      pointer-events: none;
     }
 
-    .branch {
+    #head-character {
       position: absolute;
-      bottom: 20px;
-      font-size: 32px;
-      color: #2ecc71;
+      bottom: 50px;
+      left: 50px;
+      font-size: 3rem;
+      transition: bottom 0.3s ease-out;
+      z-index: 10;
+      filter: drop-shadow(0 0 15px #9370db);
     }
 
-    .msg {
-      margin: 20px;
-      font-size: 20px;
+    .branch-obstacle {
+      position: absolute;
+      bottom: 50px;
+      right: -60px;
+      font-size: 2.5rem;
+      animation: obstacle-move 4s linear infinite;
     }
 
-    .btn {
-      padding: 10px 18px;
-      margin-top: 12px;
-      font-size: 16px;
-      background: #444;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+    @keyframes obstacle-move {
+      0% { right: -60px; }
+      100% { right: 100%; }
     }
 
-    .btn:hover {
-      background: #666;
+    .branch-safe {
+      color: #00ff41;
+      filter: drop-shadow(0 0 10px #00ff41);
+    }
+
+    .branch-danger {
+      color: #ff6b6b;
+      filter: drop-shadow(0 0 10px #ff6b6b);
+    }
+
+    .controls-panel {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .control-instruction {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: #9370db;
+    }
+
+    .control-keys {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 1rem 0;
+    }
+
+    .key-display {
+      background: linear-gradient(145deg, #333, #555);
+      border: 2px solid #666;
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #f0f6fc;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .key-display.active {
+      background: linear-gradient(145deg, #9370db, #800080);
+      border-color: #dda0dd;
+      box-shadow: 0 0 20px rgba(147, 112, 219, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .stats-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: #9370db;
+      box-shadow: 0 10px 25px rgba(147, 112, 219, 0.3);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #9370db;
+    }
+
+    .stat-label {
+      color: #7d8590;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .terminal {
+      background: #000;
+      border: 3px solid #333;
+      border-radius: 15px;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(147, 112, 219, 0.03) 2px,
+          rgba(147, 112, 219, 0.03) 4px
+        );
+      pointer-events: none;
+    }
+
+    .terminal-content {
+      color: #f0f6fc;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .log-line {
+      margin: 0.3rem 0;
+    }
+
+    .log-success { color: #00ff41; }
+    .log-error { color: #ff6b6b; }
+    .log-warning { color: #f9ca24; }
+    .log-info { color: #9370db; }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #9370db;
+      border-radius: 50%;
+      animation: void-float 12s infinite linear;
+    }
+
+    @keyframes void-float {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      95% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-10vh) translateX(100px) scale(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .success-effect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0, 255, 65, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1000;
+      animation: success-pulse 1s ease-out forwards;
+    }
+
+    @keyframes success-pulse {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .crash-effect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1000;
+      animation: crash-flash 0.5s ease-out forwards;
+    }
+
+    @keyframes crash-flash {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        padding: 1rem;
+      }
+      
+      .void-space {
+        padding: 1.5rem;
+      }
+      
+      .head-runner {
+        font-size: 3rem;
+      }
+      
+      .game-area {
+        height: 300px;
+      }
+      
+      .control-keys {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .stats-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .instructions {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #9370db;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .instructions-title {
+      font-weight: 800;
+      color: #9370db;
+      margin-bottom: 1rem;
+    }
+
+    .game-status {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-align: center;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      border: 2px solid #30363d;
+    }
+
+    .status-waiting { 
+      color: #7d8590; 
+      border-color: #30363d;
+    }
+
+    .status-running { 
+      color: #9370db; 
+      border-color: #9370db;
+      animation: pulse 2s infinite;
+    }
+
+    .status-success { 
+      color: #00ff41; 
+      border-color: #00ff41;
+    }
+
+    .status-crashed { 
+      color: #ff6b6b; 
+      border-color: #ff6b6b;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
     }
   </style>
 </head>
-<script src="/js/arcade.js"></script>
-<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
-<header class="hud" id="hud"></header>
-  <h1>🧑‍🦲 Detached HEAD 러너</h1>
-  <div id="game-area">
-    <div id="head">👤</div>
-  </div>
-  <div class="msg" id="msg">스페이스바로 점프!</div>
-  <div class="msg" id="hint"></div>
-  <a class="btn" href="/">← 로비</a>
+  <div class="particles" id="particles"></div>
   
-  <script>
-    const head = document.getElementById("head");
-    const game = document.getElementById("game-area");
-    let jumping = false;
-    let branch;
+  <header class="hud" id="hud">
+    <div class="hud-left">
+      <a class="hud-home" href="/">← 로비</a>
+      <div class="logo">GHC</div>
+      <div class="badge">
+        SCORE&nbsp;<span id="hud-score">1337</span>
+      </div>
+    </div>
+    <div class="hud-right" id="hud-achv">
+      <div class="achv">🧑‍🦲 방황 초보</div>
+    </div>
+  </header>
 
-    function spawnBranch() {
-      branch = document.createElement("div");
-      branch.className = "branch";
-      branch.innerText = "🌿";
-      branch.style.left = "100%";
-      game.appendChild(branch);
+  <section class="title-section">
+    <h1 class="main-title">🧑‍🦲 DETACHED HEAD RUNNER</h1>
+    <p class="subtitle">브랜치 없는 무한 방황의 세계</p>
+  </section>
+
+  <main class="game-container">
+    <div class="void-space">
+      <div id="head-runner" class="head-runner lost">🧑‍🦲</div>
+      <div id="void-message">HEAD가 어디로 가야 할지 모르겠어...</div>
+    </div>
+
+    <div class="instructions">
+      <div class="instructions-title">🎮 게임 방법</div>
+      <div>스페이스바로 점프해서 안전한 브랜치(초록색)에 착지하세요! 위험한 브랜치(빨간색)는 피해야 합니다.</div>
+    </div>
+
+    <div class="game-status status-waiting" id="game-status">
+      게임 시작을 기다리는 중...
+    </div>
+
+    <div class="game-area" id="game-area">
+      <div id="head-character">👤</div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="control-instruction">점프 컨트롤</div>
+      <div class="control-keys">
+        <div class="key-display" id="space-key">SPACE</div>
+        <div class="key-display" id="enter-key">ENTER</div>
+      </div>
+      <div style="margin-top: 1rem; color: #7d8590;">
+        스페이스바로 점프 / Enter로 게임 시작
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="stat-card">
+        <div class="stat-value" id="jumps-count">0</div>
+        <div class="stat-label">성공한 점프</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="crashes-count">0</div>
+        <div class="stat-label">충돌 횟수</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="best-streak">0</div>
+        <div class="stat-label">최고 연속 기록</div>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-content">
+        <div class="log-line log-info">$ git status</div>
+        <div class="log-line log-warning">HEAD detached at commit abc123</div>
+        <div class="log-line log-error">You are in 'detached HEAD' state</div>
+        <div class="log-line" id="game-log">브랜치를 찾아 점프하세요...</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/arcade.js"></script>
+  <script>
+    let gameRunning = false;
+    let isJumping = false;
+    let currentObstacle = null;
+    let jumpsCount = parseInt(localStorage.getItem('detachedJumps') || '0');
+    let crashesCount = parseInt(localStorage.getItem('detachedCrashes') || '0');
+    let bestStreak = parseInt(localStorage.getItem('detachedBestStreak') || '0');
+    let currentStreak = 0;
+    let obstacleSpeed = 4;
+
+    function createVoidParticles() {
+      const particles = document.getElementById('particles');
+      particles.innerHTML = '';
       
-      let x = 100;
-      let timer = setInterval(() => {
-        x -= 5;
-        branch.style.left = x + "%";
+      const voidColors = ['#800080', '#9370db', '#dda0dd', '#b19cd9'];
+      
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 12 + 's';
+        particle.style.animationDuration = (Math.random() * 8 + 4) + 's';
+        particle.style.background = voidColors[Math.floor(Math.random() * voidColors.length)];
         
-        if (x < 5) {
-          clearInterval(timer);
-          branch.remove();
-          if (!jumping) {
-            fail();
-          }
-        }
-      }, 60);
+        particles.appendChild(particle);
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('jumps-count').textContent = jumpsCount;
+      document.getElementById('crashes-count').textContent = crashesCount;
+      document.getElementById('best-streak').textContent = bestStreak;
+      
+      localStorage.setItem('detachedJumps', jumpsCount);
+      localStorage.setItem('detachedCrashes', crashesCount);
+      localStorage.setItem('detachedBestStreak', bestStreak);
+    }
+
+    function updateVoidMessage() {
+      const messages = [
+        "HEAD가 어디로 가야 할지 모르겠어...",
+        "브랜치가 없으면 이렇게 방황하는구나...",
+        "누군가 나를 구해줘...",
+        "git checkout main을 외치고 싶어...",
+        "이 무한한 공허 속에서...",
+        "브랜치로 돌아가고 싶다..."
+      ];
+      
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById('void-message').textContent = randomMessage;
+    }
+
+    function updateHeadState(state) {
+      const runner = document.getElementById('head-runner');
+      runner.className = `head-runner ${state}`;
+    }
+
+    function updateGameStatus(status, message) {
+      const statusEl = document.getElementById('game-status');
+      statusEl.className = `game-status status-${status}`;
+      statusEl.textContent = message;
+    }
+
+    function updateGameLog(message) {
+      document.getElementById('game-log').textContent = message;
+    }
+
+    function showEffect(type) {
+      const effect = document.createElement('div');
+      effect.className = type === 'success' ? 'success-effect' : 'crash-effect';
+      document.body.appendChild(effect);
+      
+      setTimeout(() => {
+        effect.remove();
+      }, 1000);
     }
 
     function jump() {
-      if (jumping) return;
+      if (!gameRunning || isJumping) return;
       
-      jumping = true;
-      head.style.bottom = "120px";
+      isJumping = true;
+      const character = document.getElementById('head-character');
+      
+      // 점프 애니메이션
+      character.style.bottom = '150px';
+      character.style.transition = 'bottom 0.3s ease-out';
+      
+      // 키 표시 활성화
+      document.getElementById('space-key').classList.add('active');
       
       setTimeout(() => {
-        head.style.bottom = "20px";
-        jumping = false;
+        character.style.bottom = '50px';
+        character.style.transition = 'bottom 0.3s ease-in';
+        
+        setTimeout(() => {
+          isJumping = false;
+          document.getElementById('space-key').classList.remove('active');
+        }, 300);
+      }, 300);
+    }
+
+    function spawnObstacle() {
+      if (!gameRunning) return;
+      
+      const gameArea = document.getElementById('game-area');
+      const obstacle = document.createElement('div');
+      obstacle.className = 'branch-obstacle';
+      
+      // 랜덤하게 안전/위험 브랜치 생성 (70% 안전)
+      const isSafe = Math.random() < 0.7;
+      obstacle.classList.add(isSafe ? 'branch-safe' : 'branch-danger');
+      obstacle.textContent = isSafe ? '🌿' : '🔥';
+      obstacle.setAttribute('data-safe', isSafe);
+      
+      gameArea.appendChild(obstacle);
+      currentObstacle = obstacle;
+      
+      // 장애물 이동
+      let position = -60;
+      const moveInterval = setInterval(() => {
+        position -= obstacleSpeed;
+        obstacle.style.right = position + 'px';
+        
+        // 충돌 검사 (캐릭터 위치: left 50px)
+        if (position >= -100 && position <= -20) {
+          const characterBottom = parseInt(document.getElementById('head-character').style.bottom) || 50;
+          
+          if (characterBottom <= 80) { // 땅에 있을 때
+            if (isSafe) {
+              // 안전한 브랜치 착지 성공
+              handleSuccess();
+            } else {
+              // 위험한 브랜치 충돌
+              handleCrash();
+            }
+            clearInterval(moveInterval);
+            obstacle.remove();
+            return;
+          }
+        }
+        
+        // 화면 밖으로 나감
+        if (position < -window.innerWidth) {
+          clearInterval(moveInterval);
+          obstacle.remove();
+          
+          // 점프하지 않고 안전한 브랜치를 놓침
+          if (isSafe && !isJumping) {
+            handleMiss();
+          }
+        }
+      }, 16);
+      
+      // 다음 장애물 스폰 예약
+      setTimeout(() => {
+        spawnObstacle();
+      }, Math.random() * 2000 + 2000); // 2-4초 간격
+    }
+
+    function handleSuccess() {
+      jumpsCount++;
+      currentStreak++;
+      
+      if (currentStreak > bestStreak) {
+        bestStreak = currentStreak;
+      }
+      
+      updateStats();
+      updateHeadState('landed');
+      updateGameLog(`브랜치 착지 성공! 연속 ${currentStreak}회`);
+      showEffect('success');
+      
+      // 게임 속도 조금씩 증가
+      obstacleSpeed = Math.min(8, obstacleSpeed + 0.1);
+      
+      if (window.ghcAddScore) {
+        window.ghcAddScore(50 + (currentStreak * 10));
+      }
+      
+      if (window.ghcUnlock) {
+        if (jumpsCount === 1) {
+          window.ghcUnlock('first-jump', '첫 착지', 'good');
+        }
+        if (currentStreak >= 5) {
+          window.ghcUnlock('streak-master', '연속 점프왕', 'good');
+        }
+        if (jumpsCount >= 20) {
+          window.ghcUnlock('head-navigator', 'HEAD 항해사', 'good');
+        }
+      }
+      
+      setTimeout(() => {
+        updateHeadState('lost');
+      }, 1500);
+    }
+
+    function handleCrash() {
+      crashesCount++;
+      currentStreak = 0;
+      
+      updateStats();
+      updateHeadState('crashed');
+      updateGameLog('위험한 브랜치에 충돌! HEAD가 더 혼란스러워졌다...');
+      showEffect('crash');
+      
+      if (window.ghcAddScore) {
+        window.ghcAddScore(-25);
+      }
+      
+      if (window.ghcUnlock) {
+        if (crashesCount >= 5) {
+          window.ghcUnlock('crash-master', '충돌왕', 'bad');
+        }
+      }
+      
+      setTimeout(() => {
+        updateHeadState('lost');
+      }, 2000);
+    }
+
+    function handleMiss() {
+      updateGameLog('안전한 브랜치를 놓쳤다... 기회를 놓치면 안 되는데');
+    }
+
+    function startGame() {
+      if (gameRunning) return;
+      
+      gameRunning = true;
+      currentStreak = 0;
+      obstacleSpeed = 4;
+      
+      updateGameStatus('running', 'HEAD가 방황 중... 브랜치를 찾아주세요!');
+      updateGameLog('게임 시작! 안전한 브랜치에 착지하세요');
+      
+      // 첫 장애물 스폰
+      setTimeout(() => {
+        spawnObstacle();
+      }, 2000);
+      
+      document.getElementById('enter-key').classList.add('active');
+      setTimeout(() => {
+        document.getElementById('enter-key').classList.remove('active');
       }, 500);
     }
 
-    function success() {
-      document.getElementById("msg").innerText = "HEAD가 브랜치를 찾음!";
+    function stopGame() {
+      gameRunning = false;
+      updateGameStatus('waiting', '게임 종료. Enter를 눌러 다시 시작하세요');
       
-      fetch("/api/detached/jump", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({action: "branch"})
-      })
-      .then(r => r.json())
-      .then(d => document.getElementById("hint").innerText = d.hint);
+      // 모든 장애물 제거
+      document.querySelectorAll('.branch-obstacle').forEach(obstacle => {
+        obstacle.remove();
+      });
     }
 
-    function fail() {
-      document.getElementById("msg").innerText = "HEAD 낙사...";
+    document.addEventListener('DOMContentLoaded', () => {
+      createVoidParticles();
+      updateStats();
       
-      fetch("/api/detached/jump", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({action: "fail"})
-      })
-      .then(r => r.json())
-      .then(d => document.getElementById("hint").innerText = d.hint);
-    }
-
-    document.addEventListener("keydown", e => {
-      if (e.code === "Space") {
-        jump();
+      if (window.ghcMountHUD) {
+        window.ghcMountHUD({ showHome: true });
+      }
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          jump();
+        } else if (e.code === 'Enter') {
+          e.preventDefault();
+          if (!gameRunning) {
+            startGame();
+          }
+        }
+      });
+      
+      setInterval(updateVoidMessage, 4000);
+      
+      if (localStorage.getItem('detachedGameVisited') !== '1') {
+        localStorage.setItem('detachedGameVisited', '1');
+        if (window.ghcUnlock) {
+          window.ghcUnlock('detached-beginner', '방황의 시작', 'good');
+        }
       }
     });
-
-    setInterval(() => {
-      spawnBranch();
-      
-      setTimeout(() => {
-        if (jumping) {
-          success();
-        }
-      }, 500);
-    }, 3000);
   </script>
 </body>
 </html>

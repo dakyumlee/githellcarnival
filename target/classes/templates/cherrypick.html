@@ -4,132 +4,888 @@
   <meta charset="UTF-8">
   <title>🍒 체리픽 러시</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="/css/arcade.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: 'Pretendard', sans-serif;
-      text-align: center;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-    h1 {
-      margin-top: 30px;
-      font-size: 2.5rem;
+
+    body {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+      color: #f0f6fc;
+      font-family: 'JetBrains Mono', 'Pretendard', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    p {
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(220, 20, 60, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(139, 0, 0, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .hud {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid #30363d;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #00ff41;
       font-size: 1.2rem;
-      margin-bottom: 20px;
-      color: #ccc;
     }
-    #commit-list {
-      margin: 20px auto;
-      width: 60%;
-      text-align: left;
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px solid #30363d;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
     }
-    .commit {
-      padding: 12px;
-      margin: 6px 0;
-      border: 1px solid #444;
-      border-radius: 5px;
+
+    .hud-home {
+      background: linear-gradient(145deg, #21262d, #404040);
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .hud-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .achv {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px dashed #30363d;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .title-section {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #dc143c, #ff6347, #ff1493, #dc143c);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: cherry-gradient 3s ease-in-out infinite;
+    }
+
+    @keyframes cherry-gradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      color: #7d8590;
+      font-size: 1.2rem;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .game-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .cherry-orchard {
+      background: linear-gradient(145deg, #2a1a1a, #4a2a2a);
+      border: 3px solid #8b0000;
+      border-radius: 25px;
+      padding: 3rem;
+      margin: 2rem 0;
+      text-align: center;
+      box-shadow: 
+          0 0 50px rgba(139, 0, 0, 0.3),
+          inset 0 0 30px rgba(220, 20, 60, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cherry-orchard::before {
+      content: '🌸';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      background: linear-gradient(145deg, #2a1a1a, #4a2a2a);
+      padding: 0 20px;
+      border: 2px solid #8b0000;
+      border-radius: 50%;
+    }
+
+    .picker-avatar {
+      font-size: 6rem;
+      margin: 2rem 0;
+      filter: drop-shadow(0 0 30px currentColor);
+      transition: all 0.5s ease;
+    }
+
+    .picker-avatar.picking { 
+      color: #ff6347; 
+      animation: pick-glow 2s infinite alternate;
+    }
+    
+    .picker-avatar.success { 
+      color: #00ff41; 
+      animation: success-bounce 1s infinite;
+    }
+    
+    .picker-avatar.fail { 
+      color: #ff1493; 
+      animation: fail-shake 0.5s infinite;
+    }
+
+    @keyframes pick-glow {
+      0% { filter: drop-shadow(0 0 20px currentColor); }
+      100% { filter: drop-shadow(0 0 40px currentColor); }
+    }
+
+    @keyframes success-bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes fail-shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .commit-garden {
+      margin: 2rem 0;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .garden-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      color: #f0f6fc;
+    }
+
+    .commit-tree {
+      display: grid;
+      gap: 1rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+      border: 2px solid #30363d;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .commit-branch {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
-    .commit:hover {
-      background: #333;
+
+    .commit-branch::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
     }
-    .commit.selected {
-      background: #2ecc71;
-      color: black;
-      font-weight: bold;
+
+    .commit-branch:hover::before {
+      left: 100%;
     }
-    button {
-      margin-top: 20px;
-      padding: 12px 28px;
-      font-size: 18px;
-      background: #e74c3c;
+
+    .commit-branch:hover {
+      transform: translateY(-3px);
+      border-color: #dc143c;
+      box-shadow: 0 10px 25px rgba(220, 20, 60, 0.3);
+    }
+
+    .commit-branch.selected {
+      border-color: #00ff41;
+      background: linear-gradient(145deg, #0f2f0f, #1f3f1f);
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    }
+
+    .commit-hash {
+      font-weight: 800;
+      color: #f1e05a;
+      font-size: 0.9rem;
+      min-width: 60px;
+    }
+
+    .commit-message {
+      flex: 1;
+      color: #f0f6fc;
+      font-size: 1rem;
+    }
+
+    .commit-type {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .type-good {
+      background: rgba(0, 255, 65, 0.2);
+      color: #00ff41;
+      border: 1px solid #00ff41;
+    }
+
+    .type-bad {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+    }
+
+    .harvest-section {
+      margin: 3rem 0;
+      text-align: center;
+    }
+
+    .harvest-button {
+      background: linear-gradient(145deg, #8b0000, #dc143c);
       border: none;
       color: white;
+      font-size: 1.5rem;
+      font-weight: 900;
+      padding: 20px 40px;
+      border-radius: 15px;
       cursor: pointer;
-      border-radius: 8px;
-      transition: background 0.2s;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+          0 8px 25px rgba(139, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
-    button:hover {
-      background: #c0392b;
+
+    .harvest-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
     }
-    #avatar {
-      font-size: 64px;
-      margin: 30px 0 10px;
+
+    .harvest-button:hover::before {
+      left: 100%;
     }
-    #log {
-      font-size: 20px;
-      margin-top: 10px;
+
+    .harvest-button:hover {
+      background: linear-gradient(145deg, #dc143c, #8b0000);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 
+          0 15px 40px rgba(139, 0, 0, 0.6),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
-    #hint {
-      font-size: 16px;
-      margin-top: 8px;
-      color: #aaa;
+
+    .harvest-button:disabled {
+      background: linear-gradient(145deg, #666, #888);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .results-panel {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .terminal {
+      background: #000;
+      border: 3px solid #333;
+      border-radius: 15px;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(220, 20, 60, 0.03) 2px,
+          rgba(220, 20, 60, 0.03) 4px
+        );
+      pointer-events: none;
+    }
+
+    .terminal-header {
+      color: #dc143c;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.5rem;
+    }
+
+    .terminal-content {
+      color: #f0f6fc;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .log-message {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .log-hint {
+      color: #7d8590;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      font-style: italic;
+    }
+
+    .avatar-panel {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .status-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .basket-counter {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid #30363d;
+    }
+
+    .basket-label {
+      font-size: 0.9rem;
+      color: #7d8590;
+      margin-bottom: 0.5rem;
+    }
+
+    .basket-count {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #dc143c;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #dc143c;
+      border-radius: 50%;
+      animation: cherry-float 8s infinite linear;
+    }
+
+    @keyframes cherry-float {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      95% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) translateX(30px) scale(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .success-effect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0, 255, 65, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1000;
+      animation: success-fade 2s ease-out forwards;
+    }
+
+    @keyframes success-fade {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .fail-effect {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255, 20, 147, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1000;
+      animation: fail-pulse 1s ease-out forwards;
+    }
+
+    @keyframes fail-pulse {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        padding: 1rem;
+      }
+      
+      .cherry-orchard {
+        padding: 2rem 1rem;
+      }
+      
+      .picker-avatar {
+        font-size: 4rem;
+      }
+      
+      .harvest-button {
+        font-size: 1.2rem;
+        padding: 15px 30px;
+      }
+      
+      .results-panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .commit-branch {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }
+
+    .instructions {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #dc143c;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .instructions-title {
+      font-weight: 800;
+      color: #dc143c;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
-<script src="/js/arcade.js"></script>
-<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
-<header class="hud" id="hud"></header>
-  <h1>🍒 체리픽 러시</h1>
-  <p>버그 픽스 커밋만 골라 체리픽하세요!</p>
+  <div class="particles" id="particles"></div>
+  
+  <header class="hud" id="hud">
+    <div class="hud-left">
+      <a class="hud-home" href="/">← 로비</a>
+      <div class="logo">GHC</div>
+      <div class="badge">
+        SCORE&nbsp;<span id="hud-score">1337</span>
+      </div>
+    </div>
+    <div class="hud-right" id="hud-achv">
+      <div class="achv">🍒 체리 초보</div>
+    </div>
+  </header>
 
-  <div id="commit-list"></div>
+  <section class="title-section">
+    <h1 class="main-title">🍒 CHERRY PICK RUSH</h1>
+    <p class="subtitle">버그픽스 커밋만 골라내는 스킬게임</p>
+  </section>
 
-  <button onclick="executeCherryPick()">🍒 Cherry-pick 실행!</button>
+  <main class="game-container">
+    <div class="cherry-orchard">
+      <div id="picker-avatar" class="picker-avatar">🧑‍🌾</div>
+      <div id="picker-message">좋은 체리만 골라야 해...</div>
+    </div>
 
-  <div id="avatar">🧑‍💻</div>
-  <div id="log"></div>
-  <div id="hint"></div>
+    <div class="instructions">
+      <div class="instructions-title">🎯 게임 방법</div>
+      <div>버그 수정과 관련된 커밋만 선택하세요! 잘못된 커밋을 고르면 코드베이스가 망가집니다.</div>
+    </div>
 
+    <div class="commit-garden">
+      <div class="garden-title">🌳 커밋 과수원</div>
+      <div id="commit-tree" class="commit-tree">
+        <!-- 커밋 목록이 여기에 동적으로 생성됩니다 -->
+      </div>
+    </div>
+
+    <div class="harvest-section">
+      <button id="harvest-button" class="harvest-button">
+        🍒 CHERRY-PICK 실행!
+      </button>
+      <div style="margin-top: 1rem; color: #7d8590; font-size: 0.9rem;">
+        Enter키로도 실행 가능
+      </div>
+    </div>
+
+    <div class="results-panel">
+      <div class="terminal">
+        <div class="terminal-header">$ git cherry-pick <span id="selected-hashes"></span></div>
+        <div class="terminal-content">
+          <div id="log-message" class="log-message">커밋을 선택하고 체리픽을 실행하세요</div>
+          <div id="log-hint" class="log-hint">올바른 커밋만 선택해야 성공합니다</div>
+        </div>
+      </div>
+      
+      <div class="avatar-panel">
+        <div class="status-text">수확 상태</div>
+        <div class="basket-counter">
+          <div class="basket-label">선택한 커밋</div>
+          <div id="basket-count" class="basket-count">0</div>
+        </div>
+        <div id="status-message">대기 중...</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/arcade.js"></script>
   <script>
-    let selected = [];
+    let selectedCommits = [];
+    let commits = {};
+    let isExecuting = false;
+
+    function createCherryParticles() {
+      const particles = document.getElementById('particles');
+      particles.innerHTML = '';
+      
+      const cherryColors = ['#dc143c', '#ff6347', '#ff1493', '#b22222'];
+      
+      for (let i = 0; i < 35; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        particle.style.background = cherryColors[Math.floor(Math.random() * cherryColors.length)];
+        
+        particles.appendChild(particle);
+      }
+    }
 
     function loadCommits() {
       fetch('/api/cherrypick/commits')
         .then(res => res.json())
         .then(data => {
-          const list = Object.entries(data)
-            .map(([hash, msg]) => `
-              <div class="commit" onclick="toggleCommit('${hash}', this)">
-                [${hash}] ${msg}
-              </div>
-            `).join("");
-          document.getElementById("commit-list").innerHTML = list;
+          commits = data;
+          renderCommitTree();
+        })
+        .catch(error => {
+          console.error('커밋 로딩 실패:', error);
+          renderDemoCommits();
         });
     }
 
-    function toggleCommit(hash, element) {
-      if (selected.includes(hash)) {
-        selected = selected.filter(h => h !== hash);
-        element.classList.remove("selected");
-      } else {
-        selected.push(hash);
-        element.classList.add("selected");
-      }
+    function renderDemoCommits() {
+      commits = {
+        "7fa21c": "Fix null pointer bug ✅",
+        "81bd92": "Update README ❌",
+        "af2c33": "Remove console.log ❌", 
+        "b9f443": "Fix user login crash ✅",
+        "2cf882": "CSS margin 조정 ❌",
+        "c8e110": "Add debug print ❌",
+        "f1a77d": "Fix race condition ✅",
+        "19be72": "Update .gitignore ❌"
+      };
+      renderCommitTree();
     }
 
-    function executeCherryPick() {
-      fetch('/api/cherrypick/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ selected })
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("log").innerText = data.message;
-        document.getElementById("hint").innerText = data.hint;
-        document.getElementById("avatar").innerText = data.success ? "😎" : "😡";
+    function renderCommitTree() {
+      const tree = document.getElementById('commit-tree');
+      tree.innerHTML = '';
+      
+      Object.entries(commits).forEach(([hash, message]) => {
+        const isGood = message.includes('✅');
+        const cleanMessage = message.replace(/[✅❌]/g, '').trim();
+        
+        const branch = document.createElement('div');
+        branch.className = 'commit-branch';
+        branch.setAttribute('data-hash', hash);
+        
+        branch.innerHTML = `
+          <div class="commit-hash">${hash}</div>
+          <div class="commit-message">${cleanMessage}</div>
+          <div class="commit-type ${isGood ? 'type-good' : 'type-bad'}">
+            ${isGood ? 'BUGFIX' : 'MISC'}
+          </div>
+        `;
+        
+        branch.addEventListener('click', () => toggleCommit(hash, branch));
+        tree.appendChild(branch);
       });
     }
 
-    loadCommits();
+    function toggleCommit(hash, element) {
+      if (selectedCommits.includes(hash)) {
+        selectedCommits = selectedCommits.filter(h => h !== hash);
+        element.classList.remove('selected');
+      } else {
+        selectedCommits.push(hash);
+        element.classList.add('selected');
+      }
+      
+      updateBasketCounter();
+      updateSelectedHashes();
+      updatePickerMessage();
+    }
+
+    function updateBasketCounter() {
+      document.getElementById('basket-count').textContent = selectedCommits.length;
+    }
+
+    function updateSelectedHashes() {
+      const hashesText = selectedCommits.length > 0 ? selectedCommits.join(' ') : '<commits>';
+      document.getElementById('selected-hashes').textContent = hashesText;
+    }
+
+    function updatePickerMessage() {
+      const messages = [
+        "좋은 체리만 골라야 해...",
+        "이 커밋은 괜찮을까?",
+        "신중하게 선택하자...",
+        "버그픽스만 골라내야 한다...",
+        "코드베이스를 망치면 안돼...",
+        "팀장님이 보고 있어..."
+      ];
+      
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById('picker-message').textContent = randomMessage;
+    }
+
+    function updatePickerState(state) {
+      const avatar = document.getElementById('picker-avatar');
+      const statusMessage = document.getElementById('status-message');
+      
+      const states = {
+        picking: { emoji: '🤔', message: '선택 중...' },
+        success: { emoji: '🎉', message: '완벽한 선택!' },
+        fail: { emoji: '💀', message: '잘못된 선택...' },
+        neutral: { emoji: '🧑‍🌾', message: '대기 중...' }
+      };
+      
+      const currentState = states[state] || states.neutral;
+      avatar.textContent = currentState.emoji;
+      avatar.className = `picker-avatar ${state}`;
+      statusMessage.textContent = currentState.message;
+    }
+
+    function showEffect(type) {
+      const effect = document.createElement('div');
+      effect.className = type === 'success' ? 'success-effect' : 'fail-effect';
+      document.body.appendChild(effect);
+      
+      setTimeout(() => {
+        effect.remove();
+      }, 2000);
+    }
+
+    function executeCherryPick() {
+      if (isExecuting || selectedCommits.length === 0) return;
+      
+      isExecuting = true;
+      const button = document.getElementById('harvest-button');
+      button.disabled = true;
+      button.textContent = '수확 중...';
+      
+      updatePickerState('picking');
+      
+      setTimeout(() => {
+        fetch('/api/cherrypick/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ selected: selectedCommits })
+        })
+        .then(res => res.json())
+        .then(data => {
+          const logMessage = document.getElementById('log-message');
+          const logHint = document.getElementById('log-hint');
+          
+          logMessage.textContent = data.message;
+          logHint.textContent = data.hint;
+          
+          if (data.success) {
+            updatePickerState('success');
+            showEffect('success');
+            
+            if (window.ghcAddScore) {
+              window.ghcAddScore(200 + (selectedCommits.length * 50));
+            }
+            
+            if (window.ghcUnlock) {
+              window.ghcUnlock('cherry-master', '체리픽 마스터', 'good');
+            }
+          } else {
+            updatePickerState('fail');
+            showEffect('fail');
+            
+            if (window.ghcAddScore) {
+              window.ghcAddScore(-100);
+            }
+            
+            if (window.ghcUnlock) {
+              window.ghcUnlock('cherry-fail', '체리픽 실패', 'bad');
+            }
+          }
+          
+          // 선택 초기화
+          selectedCommits = [];
+          document.querySelectorAll('.commit-branch').forEach(branch => {
+            branch.classList.remove('selected');
+          });
+          updateBasketCounter();
+          updateSelectedHashes();
+          
+        })
+        .catch(error => {
+          console.error('체리픽 실행 실패:', error);
+          updatePickerState('fail');
+          document.getElementById('log-message').textContent = '서버 연결 실패';
+          document.getElementById('log-hint').textContent = '다시 시도해주세요';
+        })
+        .finally(() => {
+          button.disabled = false;
+          button.textContent = '🍒 CHERRY-PICK 실행!';
+          isExecuting = false;
+          
+          setTimeout(() => {
+            updatePickerState('neutral');
+          }, 3000);
+        });
+      }, 1000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      createCherryParticles();
+      loadCommits();
+      
+      if (window.ghcMountHUD) {
+        window.ghcMountHUD({ showHome: true });
+      }
+      
+      document.getElementById('harvest-button').addEventListener('click', executeCherryPick);
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeCherryPick();
+        }
+      });
+      
+      setInterval(updatePickerMessage, 4000);
+      
+      if (localStorage.getItem('cherryGameVisited') !== '1') {
+        localStorage.setItem('cherryGameVisited', '1');
+        if (window.ghcUnlock) {
+          window.ghcUnlock('cherry-beginner', '체리픽 입문', 'good');
+        }
+      }
+    });
   </script>
 </body>
 </html>

@@ -3,207 +3,955 @@
 <head>
   <meta charset="UTF-8">
   <title>🤡 코드 리뷰 배틀</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="/css/arcade.css">
-  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
   <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: Pretendard, sans-serif;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .wrap {
-      max-width: 1100px;
+    body {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+      color: #f0f6fc;
+      font-family: 'JetBrains Mono', 'Pretendard', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 25% 75%, rgba(255, 165, 0, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 75% 25%, rgba(255, 140, 0, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    .hud {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid #30363d;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #00ff41;
+      font-size: 1.2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px solid #30363d;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+    }
+
+    .hud-home {
+      background: linear-gradient(145deg, #21262d, #404040);
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .hud-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .achv {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px dashed #30363d;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .title-section {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #ffa500, #ff8c00, #ff7f50, #ffa500);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: review-gradient 3s ease-in-out infinite;
+    }
+
+    @keyframes review-gradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      color: #7d8590;
+      font-size: 1.2rem;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .game-container {
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 2rem;
     }
 
-    h1 {
+    .review-arena {
+      background: linear-gradient(145deg, #2a1a0d, #4a2a1a);
+      border: 3px solid #ffa500;
+      border-radius: 25px;
+      padding: 3rem;
+      margin: 2rem 0;
       text-align: center;
-      margin: 0 0 8px;
+      box-shadow: 
+          0 0 50px rgba(255, 165, 0, 0.3),
+          inset 0 0 30px rgba(255, 140, 0, 0.1);
+      position: relative;
+      overflow: hidden;
     }
 
-    .sub {
-      text-align: center;
-      color: #bbb;
-      margin-bottom: 16px;
+    .review-arena::before {
+      content: '🎭';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      background: linear-gradient(145deg, #2a1a0d, #4a2a1a);
+      padding: 0 20px;
+      border: 2px solid #ffa500;
+      border-radius: 50%;
     }
 
-    .grid {
+    .main-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 16px;
+      gap: 2rem;
+      margin: 2rem 0;
     }
 
-    #editor {
-      height: 520px;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-    }
-
-    .card {
-      background: #1e1e1e;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-      padding: 14px;
-    }
-
-    .btn {
-      background: #e74c3c;
-      border: none;
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      background: #c0392b;
-    }
-
-    .bar {
-      height: 10px;
-      background: #2a2a2a;
-      border-radius: 6px;
+    .editor-section {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 15px;
       overflow: hidden;
-      margin: 6px 0 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    .fill {
-      height: 100%;
-      background: #6ea8ff;
-    }
-
-    .row {
+    .editor-header {
+      background: linear-gradient(90deg, #21262d, #30363d);
+      padding: 12px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid #30363d;
     }
 
-    .avatar {
-      font-size: 56px;
+    .editor-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .editor-control {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .control-close { background: #ff5f56; }
+    .control-minimize { background: #ffbd2e; }
+    .control-maximize { background: #27ca3f; }
+
+    .editor-title {
+      color: #7d8590;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .line-counter {
+      color: #ffa500;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    #editor {
+      height: 500px;
+      width: 100%;
+    }
+
+    .review-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .metrics-card {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 15px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .metrics-card:hover {
+      transform: translateY(-3px);
+      border-color: #ffa500;
+      box-shadow: 0 10px 25px rgba(255, 165, 0, 0.3);
+    }
+
+    .metric-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .metric-label {
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+
+    .metric-value {
+      font-weight: 900;
+      font-size: 1.5rem;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: #30363d;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+
+    .readability-fill { background: linear-gradient(90deg, #ff6b6b, #ffa500, #00ff41); }
+    .performance-fill { background: linear-gradient(90deg, #ff6b6b, #f9ca24, #00ff41); }
+    .anger-fill { background: linear-gradient(90deg, #00ff41, #f9ca24, #ff6b6b); }
+
+    .ai-judge {
       text-align: center;
-      margin-top: 8px;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      margin: 1rem 0;
     }
 
-    ul {
-      margin: 8px 0 0 16px;
-      color: #bbb;
+    .judge-avatar {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 20px currentColor);
+      transition: all 0.5s ease;
     }
 
-    .back {
+    .judge-avatar.calm { color: #00ff41; }
+    .judge-avatar.annoyed { color: #f9ca24; }
+    .judge-avatar.furious { 
+      color: #ff6b6b; 
+      animation: judge-rage 1s infinite alternate;
+    }
+
+    @keyframes judge-rage {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    .verdict {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .tips-section {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .tips-title {
+      font-weight: 800;
+      color: #ffa500;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tips-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tips-list li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #30363d;
+      color: #7d8590;
+    }
+
+    .tips-list li:last-child {
+      border-bottom: none;
+    }
+
+    .review-button {
+      width: 100%;
+      background: linear-gradient(145deg, #ffa500, #ff8c00);
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 900;
+      padding: 15px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+          0 6px 20px rgba(255, 165, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .review-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .review-button:hover::before {
+      left: 100%;
+    }
+
+    .review-button:hover {
+      background: linear-gradient(145deg, #ff8c00, #ffa500);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 
+          0 10px 30px rgba(255, 165, 0, 0.6),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .review-button.loading {
+      background: linear-gradient(145deg, #666, #888);
+      cursor: not-allowed;
+      animation: loading-pulse 1.5s infinite;
+    }
+
+    @keyframes loading-pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    .particles {
       position: fixed;
-      left: 16px;
-      top: 16px;
-      background: #333;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-decoration: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
     }
 
-    .back:hover {
-      background: #555;
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #ffa500;
+      border-radius: 50%;
+      animation: code-float 10s infinite linear;
+    }
+
+    @keyframes code-float {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      95% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) translateX(80px) scale(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .instructions {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #ffa500;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .instructions-title {
+      font-weight: 800;
+      color: #ffa500;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 1200px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .game-container {
+        padding: 1rem;
+      }
+      
+      .review-arena {
+        padding: 2rem 1rem;
+      }
+    }
+
+    .code-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .stat-mini {
+      text-align: center;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      border: 1px solid #30363d;
+    }
+
+    .stat-mini-value {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffa500;
+    }
+
+    .stat-mini-label {
+      font-size: 0.7rem;
+      color: #7d8590;
+    }
+
+    .time-pressure {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 107, 107, 0.9);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: none;
+      animation: time-pulse 1s infinite alternate;
+    }
+
+    @keyframes time-pulse {
+      0% { background: rgba(255, 107, 107, 0.9); }
+      100% { background: rgba(255, 107, 107, 1); }
+    }
+
+    .quality-indicator {
+      position: relative;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      border: 2px solid #30363d;
+      text-align: center;
+    }
+
+    .quality-score {
+      font-size: 2rem;
+      font-weight: 900;
+      margin: 0.5rem 0;
+    }
+
+    .score-excellent { color: #00ff41; }
+    .score-good { color: #f9ca24; }
+    .score-poor { color: #ff6b6b; }
+
+    .review-history {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid #30363d;
+    }
+
+    .history-item {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #30363d;
+      font-size: 0.9rem;
+      color: #7d8590;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
     }
   </style>
 </head>
-<script src="/js/arcade.js"></script>
-<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
-<header class="hud" id="hud"></header>
-  <a class="back" href="/">← 로비</a>
-  <div class="wrap">
-    <h1>🤡 코드 리뷰 배틀</h1>
-    <div class="sub">제한 시간 느낌으로 리팩토링 포인트를 찾아보세요</div>
-    <div class="grid">
-      <div class="card">
-        <div id="editor"></div>
-        <button id="run" class="btn" style="margin-top:10px">리뷰 요청</button>
-      </div>
-      <div class="card">
-        <div>가독성 <span id="rval">0</span></div>
-        <div class="bar">
-          <div id="rbar" class="fill" style="width:0%"></div>
-        </div>
-        <div>성능 <span id="pval">0</span></div>
-        <div class="bar">
-          <div id="pbar" class="fill" style="width:0%"></div>
-        </div>
-        <div>AI 빡침 <span id="aval">0</span></div>
-        <div class="bar">
-          <div id="abar" class="fill" style="width:0%"></div>
-        </div>
-        <div id="msg" style="margin-top:6px;font-size:18px"></div>
-        <div class="avatar" id="avatar">🧑‍💻</div>
-        <div style="margin-top:8px">리팩토링 팁</div>
-        <ul id="tips"></ul>
-        <div id="hint" style="color:#bbb;margin-top:6px"></div>
+  <div class="particles" id="particles"></div>
+  <div class="time-pressure" id="time-pressure">⏰ 제한시간: 60초</div>
+  
+  <header class="hud" id="hud">
+    <div class="hud-left">
+      <a class="hud-home" href="/">← 로비</a>
+      <div class="logo">GHC</div>
+      <div class="badge">
+        SCORE&nbsp;<span id="hud-score">1337</span>
       </div>
     </div>
-  </div>
-  
+    <div class="hud-right" id="hud-achv">
+      <div class="achv">🤡 리뷰 초보</div>
+    </div>
+  </header>
+
+  <section class="title-section">
+    <h1 class="main-title">🤡 CODE REVIEW BATTLE</h1>
+    <p class="subtitle">AI 심판관과의 코드 품질 대결</p>
+  </section>
+
+  <main class="game-container">
+    <div class="review-arena">
+      <div>🏟️ 코드 리뷰 경기장 🏟️</div>
+      <div style="margin-top: 1rem; font-size: 1.2rem; color: #7d8590;">
+        AI 심판관이 당신의 코드를 엄격하게 평가합니다
+      </div>
+    </div>
+
+    <div class="instructions">
+      <div class="instructions-title">🎯 배틀 규칙</div>
+      <div>코드를 작성하거나 수정한 후 리뷰를 요청하세요. 가독성, 성능, AI 빡침 지수가 평가됩니다. 높은 품질의 코드를 작성할수록 더 많은 점수를 얻습니다!</div>
+    </div>
+
+    <div class="main-grid">
+      <div class="editor-section">
+        <div class="editor-header">
+          <div class="editor-controls">
+            <div class="editor-control control-close"></div>
+            <div class="editor-control control-minimize"></div>
+            <div class="editor-control control-maximize"></div>
+          </div>
+          <div class="editor-title">ReviewBattle.java</div>
+          <div class="line-counter" id="line-counter">Lines: 0</div>
+        </div>
+        <div id="editor"></div>
+        <div class="code-stats">
+          <div class="stat-mini">
+            <div class="stat-mini-value" id="char-count">0</div>
+            <div class="stat-mini-label">Characters</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-value" id="method-count">0</div>
+            <div class="stat-mini-label">Methods</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-value" id="complexity">0</div>
+            <div class="stat-mini-label">Complexity</div>
+          </div>
+        </div>
+        <button id="review-button" class="review-button">
+          🔍 REQUEST REVIEW
+        </button>
+      </div>
+
+      <div class="review-panel">
+        <div class="ai-judge">
+          <div class="judge-avatar" id="judge-avatar">🤖</div>
+          <div class="verdict" id="verdict">코드를 제출하고 심판을 받으세요</div>
+          <div class="quality-indicator">
+            <div>전체 품질 점수</div>
+            <div class="quality-score score-good" id="quality-score">85</div>
+          </div>
+        </div>
+
+        <div class="metrics-card">
+          <div class="metric-item">
+            <div class="metric-label">📖 가독성</div>
+            <div class="metric-value" id="readability-score">0</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill readability-fill" id="readability-bar" style="width: 0%"></div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-label">⚡ 성능</div>
+            <div class="metric-value" id="performance-score">0</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill performance-fill" id="performance-bar" style="width: 0%"></div>
+          </div>
+
+          <div class="metric-item">
+            <div class="metric-label">😡 AI 빡침</div>
+            <div class="metric-value" id="anger-score">0</div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill anger-fill" id="anger-bar" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="tips-section">
+          <div class="tips-title">
+            💡 리팩토링 팁
+          </div>
+          <ul class="tips-list" id="tips-list">
+            <li>코드를 작성해보세요</li>
+          </ul>
+        </div>
+
+        <div class="review-history" id="review-history">
+          <div class="history-item">리뷰 기록이 여기에 표시됩니다</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/arcade.js"></script>
   <script>
     let editor;
+    let isReviewing = false;
+    let reviewCount = 0;
+    let bestQualityScore = parseInt(localStorage.getItem('bestQualityScore') || '0');
 
-    require.config({
-      paths: {
-        'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs'
-      }
-    });
-
-    require(['vs/editor/editor.main'], function() {
-      editor = monaco.editor.create(document.getElementById('editor'), {
-        value: `public class Demo {
-  public static void main(String[] args){
-    int sum=0;
-    for(int i=0;i<200;i++){
-      for(int j=0;j<50;j++){
-        sum+=i*j;
+    function createCodeParticles() {
+      const particles = document.getElementById('particles');
+      particles.innerHTML = '';
+      
+      const codeColors = ['#ffa500', '#ff8c00', '#ff7f50', '#daa520'];
+      
+      for (let i = 0; i < 25; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 10 + 's';
+        particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        particle.style.background = codeColors[Math.floor(Math.random() * codeColors.length)];
+        
+        particles.appendChild(particle);
       }
     }
-    if(sum>0){
-      if(sum%2==0){
-        System.out.println("even");
-      }else{
-        System.out.println("odd");
-      }
+
+    function initializeEditor() {
+      require.config({ 
+        paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }
+      });
+      
+      require(["vs/editor/editor.main"], function () {
+        editor = monaco.editor.create(document.getElementById('editor'), {
+          value: `public class ReviewDemo {
+    public static void main(String[] args){
+        int sum=0;
+        for(int i=0;i<200;i++){
+            for(int j=0;j<50;j++){
+                sum+=i*j;
+            }
+        }
+        if(sum>0){
+            if(sum%2==0){
+                System.out.println("even");
+            }else{
+                System.out.println("odd");
+            }
+        }
     }
-  }
 }`,
-        language: "java",
-        theme: "vs-dark",
-        automaticLayout: true
-      });
-    });
+          language: "java",
+          theme: "vs-dark",
+          automaticLayout: true,
+          fontSize: 14,
+          fontFamily: 'JetBrains Mono, monospace',
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          roundedSelection: false,
+          padding: { top: 15, bottom: 15 }
+        });
 
-    function fill(element, value) {
-      element.style.width = Math.min(100, Math.max(0, value)) + "%";
+        editor.onDidChangeModelContent(() => {
+          updateCodeStats();
+        });
+        
+        updateCodeStats();
+      });
     }
 
-    document.getElementById("run").addEventListener("click", () => {
-      fetch("/api/review/analyze", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({code: editor.getValue()})
-      })
-      .then(r => r.json())
-      .then(d => {
-        document.getElementById("rval").innerText = d.readability;
-        document.getElementById("pval").innerText = d.performance;
-        document.getElementById("aval").innerText = d.aiAnger;
-        
-        fill(document.getElementById("rbar"), d.readability);
-        fill(document.getElementById("pbar"), d.performance);
-        fill(document.getElementById("abar"), d.aiAnger);
-        
-        document.getElementById("msg").innerText = d.message + ` (라인 ${d.lines})`;
-        document.getElementById("avatar").innerText = d.aiAnger < 30 ? "😎" : (d.aiAnger < 60 ? "😐" : "😡");
-        document.getElementById("tips").innerHTML = (d.tips || []).map(t => `<li>${t}</li>`).join("") || "<li>양호</li>";
-        document.getElementById("hint").innerText = d.hint;
+    function updateCodeStats() {
+      if (!editor) return;
+      
+      const code = editor.getValue();
+      const lines = code.split('\n').length;
+      const chars = code.length;
+      const methods = (code.match(/\w+\s*\([^)]*\)\s*{/g) || []).length;
+      const complexity = calculateComplexity(code);
+      
+      document.getElementById('line-counter').textContent = `Lines: ${lines}`;
+      document.getElementById('char-count').textContent = chars;
+      document.getElementById('method-count').textContent = methods;
+      document.getElementById('complexity').textContent = complexity;
+    }
+
+    function calculateComplexity(code) {
+      const forLoops = (code.match(/for\s*\(/g) || []).length;
+      const whileLoops = (code.match(/while\s*\(/g) || []).length;
+      const ifStatements = (code.match(/if\s*\(/g) || []).length;
+      const switches = (code.match(/switch\s*\(/g) || []).length;
+      
+      return forLoops * 2 + whileLoops * 2 + ifStatements + switches;
+    }
+
+    function updateJudgeState(angerLevel) {
+      const judgeAvatar = document.getElementById('judge-avatar');
+      
+      if (angerLevel < 30) {
+        judgeAvatar.textContent = '😊';
+        judgeAvatar.className = 'judge-avatar calm';
+      } else if (angerLevel < 60) {
+        judgeAvatar.textContent = '😐';
+        judgeAvatar.className = 'judge-avatar annoyed';
+      } else {
+        judgeAvatar.textContent = '😡';
+        judgeAvatar.className = 'judge-avatar furious';
+      }
+    }
+
+    function updateProgressBar(id, value) {
+      const bar = document.getElementById(id);
+      bar.style.width = Math.min(100, Math.max(0, value)) + '%';
+    }
+
+    function updateQualityScore(readability, performance, anger) {
+      const qualityScore = Math.round((readability + performance + (100 - anger)) / 3);
+      const scoreElement = document.getElementById('quality-score');
+      
+      scoreElement.textContent = qualityScore;
+      
+      if (qualityScore >= 80) {
+        scoreElement.className = 'quality-score score-excellent';
+      } else if (qualityScore >= 60) {
+        scoreElement.className = 'quality-score score-good';
+      } else {
+        scoreElement.className = 'quality-score score-poor';
+      }
+      
+      if (qualityScore > bestQualityScore) {
+        bestQualityScore = qualityScore;
+        localStorage.setItem('bestQualityScore', bestQualityScore);
+      }
+      
+      return qualityScore;
+    }
+
+    function addReviewHistory(message) {
+      const historyContainer = document.getElementById('review-history');
+      const historyItem = document.createElement('div');
+      historyItem.className = 'history-item';
+      historyItem.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      
+      historyContainer.insertBefore(historyItem, historyContainer.firstChild);
+      
+      if (historyContainer.children.length > 10) {
+        historyContainer.removeChild(historyContainer.lastChild);
+      }
+    }
+
+    function updateTipsList(tips) {
+      const tipsList = document.getElementById('tips-list');
+      tipsList.innerHTML = '';
+      
+      if (!tips || tips.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = '코드 품질이 양호합니다';
+        tipsList.appendChild(li);
+        return;
+      }
+      
+      tips.forEach(tip => {
+        const li = document.createElement('li');
+        li.textContent = tip;
+        tipsList.appendChild(li);
       });
+    }
+
+    async function requestReview() {
+      if (isReviewing || !editor) return;
+      
+      isReviewing = true;
+      reviewCount++;
+      
+      const button = document.getElementById('review-button');
+      button.classList.add('loading');
+      button.textContent = 'AI 심사 중...';
+      
+      updateJudgeState(50);
+      document.getElementById('verdict').textContent = 'AI가 코드를 분석하고 있습니다...';
+      
+      try {
+        const response = await fetch('/api/review/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: editor.getValue() })
+        });
+        
+        const data = await response.json();
+        
+        document.getElementById('readability-score').textContent = data.readability;
+        document.getElementById('performance-score').textContent = data.performance;
+        document.getElementById('anger-score').textContent = data.aiAnger;
+        
+        updateProgressBar('readability-bar', data.readability);
+        updateProgressBar('performance-bar', data.performance);
+        updateProgressBar('anger-bar', data.aiAnger);
+        
+        updateJudgeState(data.aiAnger);
+        
+        const qualityScore = updateQualityScore(data.readability, data.performance, data.aiAnger);
+        
+        document.getElementById('verdict').textContent = data.message;
+        
+        updateTipsList(data.tips);
+        
+        addReviewHistory(`품질 점수: ${qualityScore}, 라인 수: ${data.lines}`);
+        
+        let scoreBonus = 0;
+        if (qualityScore >= 90) {
+          scoreBonus = 300;
+        } else if (qualityScore >= 80) {
+          scoreBonus = 200;
+        } else if (qualityScore >= 70) {
+          scoreBonus = 100;
+        } else if (qualityScore >= 60) {
+          scoreBonus = 50;
+        } else {
+          scoreBonus = -50;
+        }
+        
+        if (window.ghcAddScore) {
+          window.ghcAddScore(scoreBonus);
+        }
+        
+        if (window.ghcUnlock) {
+          if (reviewCount === 1) {
+            window.ghcUnlock('first-review', '첫 리뷰', 'good');
+          }
+          if (qualityScore >= 95) {
+            window.ghcUnlock('perfect-code', '완벽한 코드', 'good');
+          }
+          if (data.aiAnger <= 10) {
+            window.ghcUnlock('ai-charmer', 'AI 매혹자', 'good');
+          }
+          if (data.aiAnger >= 90) {
+            window.ghcUnlock('ai-torturer', 'AI 고문관', 'bad');
+          }
+          if (reviewCount >= 10) {
+            window.ghcUnlock('review-veteran', '리뷰 베테랑', 'good');
+          }
+        }
+        
+      } catch (error) {
+        console.error('리뷰 요청 실패:', error);
+        document.getElementById('verdict').textContent = '리뷰 서버에 연결할 수 없습니다';
+        updateJudgeState(100);
+        addReviewHistory('리뷰 요청 실패');
+      } finally {
+        button.classList.remove('loading');
+        button.textContent = '🔍 REQUEST REVIEW';
+        isReviewing = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      createCodeParticles();
+      initializeEditor();
+      
+      if (window.ghcMountHUD) {
+        window.ghcMountHUD({ showHome: true });
+      }
+      
+      document.getElementById('review-button').addEventListener('click', requestReview);
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'Enter') {
+          e.preventDefault();
+          requestReview();
+        }
+      });
+      
+      if (localStorage.getItem('reviewGameVisited') !== '1') {
+        localStorage.setItem('reviewGameVisited', '1');
+        if (window.ghcUnlock) {
+          window.ghcUnlock('review-beginner', '리뷰 입문', 'good');
+        }
+      }
     });
   </script>
 </body>

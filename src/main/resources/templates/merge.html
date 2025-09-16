@@ -4,217 +4,996 @@
   <meta charset="UTF-8">
   <title>⚔️ Merge vs Rebase</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="/css/arcade.css">
-  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: Pretendard, sans-serif;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 24px;
+    body {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+      color: #f0f6fc;
+      font-family: 'JetBrains Mono', 'Pretendard', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 2.2rem;
-      text-align: center;
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 70%, rgba(255, 20, 147, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, rgba(255, 105, 180, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -2;
     }
 
-    .sub {
-      text-align: center;
-      color: #bbb;
-      margin-bottom: 18px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .card {
-      background: #1e1e1e;
-      border: 1px solid #2e2e2e;
-      border-radius: 10px;
-      padding: 16px;
-    }
-
-    .row {
+    .hud {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
+      gap: 16px;
       align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid #30363d;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-left {
+      display: flex;
       gap: 12px;
-      margin: 10px 0;
+      align-items: center;
     }
 
-    input[type=range] {
-      width: 220px;
+    .logo {
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #00ff41;
+      font-size: 1.2rem;
     }
 
-    .btn {
-      background: #e74c3c;
-      border: none;
-      color: #fff;
-      padding: 12px 18px;
-      border-radius: 8px;
-      cursor: pointer;
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px solid #30363d;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
     }
 
-    .btn:hover {
-      background: #c0392b;
+    .hud-home {
+      background: linear-gradient(145deg, #21262d, #404040);
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: all 0.3s ease;
+      font-weight: 600;
     }
 
-    .seg {
+    .hud-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .hud-right {
       display: flex;
       gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
-    .opt {
-      flex: 1;
-      background: #232323;
-      border: 1px solid #343434;
+    .achv {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: rgba(33, 38, 45, 0.9);
+      border: 1px dashed #30363d;
+      padding: 6px 10px;
       border-radius: 10px;
-      padding: 14px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .title-section {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-title {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, #ff1493, #ff69b4, #ff91a4, #ff1493);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: battle-gradient 3s ease-in-out infinite;
+    }
+
+    @keyframes battle-gradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      color: #7d8590;
+      font-size: 1.2rem;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .game-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .battlefield {
+      background: linear-gradient(145deg, #2a1a2a, #4a2a4a);
+      border: 3px solid #ff1493;
+      border-radius: 25px;
+      padding: 3rem;
+      margin: 2rem 0;
+      text-align: center;
+      box-shadow: 
+          0 0 50px rgba(255, 20, 147, 0.3),
+          inset 0 0 30px rgba(255, 105, 180, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .battlefield::before {
+      content: '🏛️';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      background: linear-gradient(145deg, #2a1a2a, #4a2a4a);
+      padding: 0 20px;
+      border: 2px solid #ff1493;
+      border-radius: 50%;
+    }
+
+    .strategy-selector {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin: 3rem 0;
+    }
+
+    .strategy-card {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 3px solid #404040;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 300px;
       cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
       text-align: center;
     }
 
-    .opt.active {
-      outline: 2px solid #6ea8ff;
-      background: #21293a;
+    .strategy-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      transition: transform 0.8s;
     }
 
-    pre {
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 12px;
-      white-space: pre-wrap;
-      min-height: 90px;
+    .strategy-card:hover::before {
+      transform: translateX(100%) translateY(100%) rotate(45deg);
     }
 
-    .npc {
-      margin-top: 8px;
-      color: #ccc;
+    .strategy-card:hover {
+      transform: translateY(-15px) scale(1.05);
     }
 
-    .k {
-      font-weight: 700;
+    .strategy-card.merge {
+      border-color: #4169e1;
     }
 
-    .back {
-      position: fixed;
-      left: 16px;
-      top: 16px;
-      background: #333;
+    .strategy-card.merge.active {
+      border-color: #00ff41;
+      background: linear-gradient(145deg, #0f2f0f, #1f3f1f);
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+    }
+
+    .strategy-card.rebase {
+      border-color: #ff6b35;
+    }
+
+    .strategy-card.rebase.active {
+      border-color: #ff1493;
+      background: linear-gradient(145deg, #2f0f1f, #3f1f2f);
+      box-shadow: 0 0 30px rgba(255, 20, 147, 0.4);
+    }
+
+    .strategy-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 20px currentColor);
+    }
+
+    .strategy-name {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .strategy-card.merge .strategy-name {
+      color: #4169e1;
+    }
+
+    .strategy-card.rebase .strategy-name {
+      color: #ff6b35;
+    }
+
+    .strategy-card.active .strategy-name {
+      color: #f0f6fc;
+    }
+
+    .strategy-desc {
+      color: #7d8590;
+      line-height: 1.5;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .battle-config {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .config-panel {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 15px;
+      padding: 2rem;
+    }
+
+    .panel-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #f0f6fc;
+    }
+
+    .slider-group {
+      margin: 1.5rem 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .slider-value {
+      color: #ff1493;
+      font-weight: 800;
+    }
+
+    .slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #30363d;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ff1493, #ff69b4);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+    }
+
+    .checkbox-group {
+      margin: 1.5rem 0;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: #ff1493;
+    }
+
+    .execute-section {
+      margin: 3rem 0;
+      text-align: center;
+    }
+
+    .battle-button {
+      background: linear-gradient(145deg, #ff1493, #ff69b4);
       border: none;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-decoration: none;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 900;
+      padding: 25px 50px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+          0 10px 30px rgba(255, 20, 147, 0.4),
+          inset 0 2px 0 rgba(255, 255, 255, 0.2);
     }
 
-    .back:hover {
-      background: #555;
+    .battle-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    .battle-button:hover::before {
+      left: 100%;
+    }
+
+    .battle-button:hover {
+      background: linear-gradient(145deg, #ff69b4, #ff1493);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 
+          0 20px 50px rgba(255, 20, 147, 0.6),
+          inset 0 2px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .battle-results {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .result-terminal {
+      background: #000;
+      border: 3px solid #333;
+      border-radius: 15px;
+      padding: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 20, 147, 0.03) 2px,
+          rgba(255, 20, 147, 0.03) 4px
+        );
+      pointer-events: none;
+    }
+
+    .terminal-header {
+      color: #ff1493;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.5rem;
+    }
+
+    .terminal-content {
+      color: #f0f6fc;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .git-diagram {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: pre-line;
+      border: 1px solid #30363d;
+    }
+
+    .team-reaction {
+      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      border: 2px solid #404040;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .reaction-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      color: #f0f6fc;
+    }
+
+    .team-avatar {
+      font-size: 4rem;
+      margin: 1rem 0;
+      filter: drop-shadow(0 0 20px currentColor);
+    }
+
+    .team-comment {
+      font-style: italic;
+      color: #7d8590;
+      margin: 1rem 0;
+      font-size: 1.1rem;
+      font-family: 'Pretendard', sans-serif;
+    }
+
+    .score-display {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 2px solid #30363d;
+    }
+
+    .score-label {
+      font-size: 0.9rem;
+      color: #7d8590;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-value {
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    .score-positive { color: #00ff41; }
+    .score-negative { color: #ff6b6b; }
+    .score-neutral { color: #f9ca24; }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #ff1493;
+      border-radius: 50%;
+      animation: war-float 8s infinite linear;
+    }
+
+    @keyframes war-float {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      95% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh) translateX(60px) scale(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 968px) {
+      .strategy-selector {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+      
+      .strategy-card {
+        width: 100%;
+        max-width: 350px;
+      }
+      
+      .battle-config {
+        grid-template-columns: 1fr;
+      }
+      
+      .battle-results {
+        grid-template-columns: 1fr;
+      }
+      
+      .game-container {
+        padding: 1rem;
+      }
+      
+      .battlefield {
+        padding: 2rem 1rem;
+      }
+    }
+
+    .instructions {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #ff1493;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .instructions-title {
+      font-weight: 800;
+      color: #ff1493;
+      margin-bottom: 1rem;
+    }
+
+    .conflict-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 1rem;
+    }
+
+    .conflict-low {
+      background: rgba(0, 255, 65, 0.2);
+      color: #00ff41;
+      border: 1px solid #00ff41;
+    }
+
+    .conflict-medium {
+      background: rgba(249, 202, 36, 0.2);
+      color: #f9ca24;
+      border: 1px solid #f9ca24;
+    }
+
+    .conflict-high {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
     }
   </style>
 </head>
-<script src="/js/arcade.js"></script>
-<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
-<header class="hud" id="hud"></header>
-  <a class="back" href="/">← 로비</a>
-  <div class="wrap">
-    <h1>⚔️ Merge vs Rebase</h1>
-    <div class="sub">상황에 맞는 전략을 선택하세요</div>
-    <div class="grid">
-      <div class="card">
-        <div class="row">
-          <div class="k">내 브랜치가 앞선 커밋</div>
-          <input id="local" type="range" min="0" max="6" value="2">
-          <span id="localv">2</span>
-        </div>
-        <div class="row">
-          <div class="k">main이 앞선 커밋</div>
-          <input id="remote" type="range" min="0" max="6" value="2">
-          <span id="remotev">2</span>
-        </div>
-        <div class="row">
-          <label>
-            <input id="linear" type="checkbox" checked> 팀은 직선 히스토리를 선호
-          </label>
-        </div>
-        <div class="seg">
-          <div class="opt active" data-s="merge">Merge</div>
-          <div class="opt" data-s="rebase">Rebase</div>
-        </div>
-        <div class="row">
-          <button class="btn" id="run">실행</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="k">브랜치 다이어그램</div>
-        <pre id="diagram"></pre>
-        <div id="msg" style="margin-top:6px;font-size:18px"></div>
-        <div id="hint" style="color:#bbb;margin-top:6px"></div>
-        <div id="npc" class="npc"></div>
-        <div id="score" style="margin-top:8px"></div>
+  <div class="particles" id="particles"></div>
+  
+  <header class="hud" id="hud">
+    <div class="hud-left">
+      <a class="hud-home" href="/">← 로비</a>
+      <div class="logo">GHC</div>
+      <div class="badge">
+        SCORE&nbsp;<span id="hud-score">1337</span>
       </div>
     </div>
-  </div>
-  
-  <script>
-    const local = document.getElementById("local");
-    const remote = document.getElementById("remote");
-    const localv = document.getElementById("localv");
-    const remotev = document.getElementById("remotev");
-    const opts = [...document.querySelectorAll(".opt")];
-    let strategy = "merge";
+    <div class="hud-right" id="hud-achv">
+      <div class="achv">⚔️ 전략 초보</div>
+    </div>
+  </header>
 
-    function sync() {
-      localv.innerText = local.value;
-      remotev.innerText = remote.value;
+  <section class="title-section">
+    <h1 class="main-title">⚔️ MERGE VS REBASE</h1>
+    <p class="subtitle">개발 철학의 영원한 논쟁</p>
+  </section>
+
+  <main class="game-container">
+    <div class="battlefield">
+      <div>🏛️ Git 전략 회의실 🏛️</div>
+      <div style="margin-top: 1rem; font-size: 1.2rem; color: #7d8590;">
+        팀의 운명을 좌우할 결정을 내려야 합니다
+      </div>
+    </div>
+
+    <div class="instructions">
+      <div class="instructions-title">⚔️ 전투 규칙</div>
+      <div>상황에 맞는 전략을 선택하고 설정을 조정한 후 전투를 시작하세요. 팀원들의 반응과 충돌 상황에 따라 점수가 달라집니다.</div>
+    </div>
+
+    <div class="strategy-selector">
+      <div class="strategy-card merge" data-strategy="merge">
+        <div class="strategy-icon">🤝</div>
+        <div class="strategy-name">Merge</div>
+        <div class="strategy-desc">
+          브랜치 히스토리를 보존하는<br>
+          전통적인 방식.<br>
+          머지 커밋으로 합류점 생성.
+        </div>
+      </div>
+      
+      <div class="strategy-card rebase" data-strategy="rebase">
+        <div class="strategy-icon">📏</div>
+        <div class="strategy-name">Rebase</div>
+        <div class="strategy-desc">
+          깔끔한 직선 히스토리를<br>
+          만드는 현대적 방식.<br>
+          커밋을 재정렬하여 정리.
+        </div>
+      </div>
+    </div>
+
+    <div class="battle-config">
+      <div class="config-panel">
+        <div class="panel-title">📊 프로젝트 상황</div>
+        
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>내 브랜치 앞선 커밋</span>
+            <span class="slider-value" id="local-value">2</span>
+          </div>
+          <input type="range" class="slider" id="local-slider" min="0" max="6" value="2">
+        </div>
+        
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>main 브랜치 앞선 커밋</span>
+            <span class="slider-value" id="remote-value">2</span>
+          </div>
+          <input type="range" class="slider" id="remote-slider" min="0" max="6" value="2">
+        </div>
+        
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" class="checkbox" id="linear-pref" checked>
+            팀은 직선 히스토리를 선호함
+          </label>
+        </div>
+        
+        <div id="conflict-preview" class="conflict-indicator conflict-medium">
+          ⚡ 예상 충돌: 보통
+        </div>
+      </div>
+      
+      <div class="config-panel">
+        <div class="panel-title">🎯 전략 미리보기</div>
+        <div id="strategy-preview">
+          <div style="color: #7d8590; text-align: center; margin: 2rem 0;">
+            전략을 선택하세요
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="execute-section">
+      <button id="battle-button" class="battle-button" disabled>
+        ⚔️ START BATTLE
+      </button>
+      <div style="margin-top: 1rem; color: #7d8590; font-size: 0.9rem;">
+        전략을 선택한 후 전투를 시작하세요
+      </div>
+    </div>
+
+    <div class="battle-results" id="battle-results" style="display: none;">
+      <div class="result-terminal">
+        <div class="terminal-header">$ git <span id="chosen-command"></span></div>
+        <div class="terminal-content">
+          <div id="result-message">전투 결과가 여기에 표시됩니다</div>
+          <div class="git-diagram" id="git-diagram">
+            브랜치 다이어그램이 여기에 표시됩니다
+          </div>
+          <div id="result-hint">명령어 힌트</div>
+        </div>
+      </div>
+      
+      <div class="team-reaction">
+        <div class="reaction-title">👥 팀 반응</div>
+        <div class="team-avatar" id="team-avatar">🧑‍💻</div>
+        <div class="team-comment" id="team-comment">팀원들의 반응을 기다리는 중...</div>
+        
+        <div class="score-display">
+          <div class="score-label">정치적 점수</div>
+          <div class="score-value score-neutral" id="political-score">+0</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/arcade.js"></script>
+  <script>
+    let selectedStrategy = null;
+    let localAhead = 2;
+    let remoteAhead = 2;
+    let teamLikesLinear = true;
+    let isBattling = false;
+
+    function createWarParticles() {
+      const particles = document.getElementById('particles');
+      particles.innerHTML = '';
+      
+      const warColors = ['#ff1493', '#ff69b4', '#ff91a4', '#c71585'];
+      
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        particle.style.background = warColors[Math.floor(Math.random() * warColors.length)];
+        
+        particles.appendChild(particle);
+      }
     }
 
-    opts.forEach(o => {
-      o.addEventListener("click", () => {
-        opts.forEach(x => x.classList.remove("active"));
-        o.classList.add("active");
-        strategy = o.dataset.s;
+    function selectStrategy(strategy) {
+      selectedStrategy = strategy;
+      
+      document.querySelectorAll('.strategy-card').forEach(card => {
+        card.classList.remove('active');
       });
-    });
+      
+      document.querySelector(`[data-strategy="${strategy}"]`).classList.add('active');
+      
+      updateStrategyPreview();
+      updateBattleButton();
+    }
 
-    document.getElementById("run").addEventListener("click", () => {
-      const requestData = {
-        strategy,
-        localAhead: parseInt(local.value, 10),
-        remoteAhead: parseInt(remote.value, 10),
-        teamLikesLinear: document.getElementById("linear").checked
+    function updateStrategyPreview() {
+      const preview = document.getElementById('strategy-preview');
+      
+      if (!selectedStrategy) {
+        preview.innerHTML = '<div style="color: #7d8590; text-align: center; margin: 2rem 0;">전략을 선택하세요</div>';
+        return;
+      }
+      
+      const strategies = {
+        merge: {
+          icon: '🤝',
+          title: 'MERGE 전략',
+          description: '브랜치를 병합하여 머지 커밋 생성',
+          pros: ['히스토리 보존', '안전한 방식', '되돌리기 쉬움'],
+          cons: ['복잡한 히스토리', '머지 커밋 생성']
+        },
+        rebase: {
+          icon: '📏',
+          title: 'REBASE 전략', 
+          description: '커밋을 재배열하여 직선 히스토리 생성',
+          pros: ['깔끔한 히스토리', '읽기 쉬움', '현대적'],
+          cons: ['히스토리 변경', '충돌 해결 복잡', '강제 푸시 필요']
+        }
       };
+      
+      const strategy = strategies[selectedStrategy];
+      preview.innerHTML = `
+        <div style="text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 1rem;">${strategy.icon}</div>
+          <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; color: ${selectedStrategy === 'merge' ? '#4169e1' : '#ff6b35'};">
+            ${strategy.title}
+          </div>
+          <div style="margin-bottom: 1rem; color: #7d8590;">${strategy.description}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.8rem;">
+            <div>
+              <div style="color: #00ff41; font-weight: 600; margin-bottom: 0.5rem;">장점</div>
+              ${strategy.pros.map(pro => `<div>• ${pro}</div>`).join('')}
+            </div>
+            <div>
+              <div style="color: #ff6b6b; font-weight: 600; margin-bottom: 0.5rem;">단점</div>
+              ${strategy.cons.map(con => `<div>• ${con}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
-      fetch("/api/merge/execute", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(requestData)
-      })
-      .then(r => r.json())
-      .then(d => {
-        document.getElementById("diagram").innerText = d.diagram;
-        document.getElementById("msg").innerText = d.message + (d.conflicts ? ` (충돌 ${d.conflicts})` : "");
-        document.getElementById("hint").innerText = d.hint;
-        document.getElementById("npc").innerText = d.npc;
-        document.getElementById("score").innerText = "점수 변화: " + (d.scoreDiff > 0 ? `+${d.scoreDiff}` : d.scoreDiff);
+    function updateConflictPreview() {
+      const complexity = localAhead + remoteAhead;
+      const conflicts = Math.max(0, complexity - 3);
+      const preview = document.getElementById('conflict-preview');
+      
+      if (conflicts === 0) {
+        preview.className = 'conflict-indicator conflict-low';
+        preview.innerHTML = '✅ 예상 충돌: 없음';
+      } else if (conflicts <= 2) {
+        preview.className = 'conflict-indicator conflict-medium';
+        preview.innerHTML = `⚡ 예상 충돌: ${conflicts}건`;
+      } else {
+        preview.className = 'conflict-indicator conflict-high';
+        preview.innerHTML = `💥 예상 충돌: ${conflicts}건`;
+      }
+    }
+
+    function updateBattleButton() {
+      const button = document.getElementById('battle-button');
+      button.disabled = !selectedStrategy;
+      button.textContent = selectedStrategy ? '⚔️ START BATTLE' : '⚔️ 전략을 선택하세요';
+    }
+
+    function executeBattle() {
+      if (isBattling || !selectedStrategy) return;
+      
+      isBattling = true;
+      const button = document.getElementById('battle-button');
+      button.disabled = true;
+      button.textContent = '전투 중...';
+      
+      setTimeout(() => {
+        fetch('/api/merge/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            strategy: selectedStrategy,
+            localAhead: localAhead,
+            remoteAhead: remoteAhead,
+            teamLikesLinear: teamLikesLinear
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          displayBattleResults(data);
+        })
+        .catch(error => {
+          console.error('전투 실행 실패:', error);
+          displayErrorResults();
+        })
+        .finally(() => {
+          button.disabled = false;
+          button.textContent = '⚔️ START BATTLE';
+          isBattling = false;
+        });
+      }, 1000);
+    }
+
+    function displayBattleResults(data) {
+      const resultsSection = document.getElementById('battle-results');
+      resultsSection.style.display = 'grid';
+      
+      document.getElementById('chosen-command').textContent = selectedStrategy === 'merge' ? 'merge origin/main' : 'rebase origin/main';
+      document.getElementById('result-message').textContent = data.message;
+      document.getElementById('git-diagram').textContent = data.diagram || '브랜치 다이어그램';
+      document.getElementById('result-hint').textContent = data.hint;
+      
+      const teamAvatar = document.getElementById('team-avatar');
+      const teamComment = document.getElementById('team-comment');
+      const politicalScore = document.getElementById('political-score');
+      
+      teamComment.textContent = data.npc || '팀원들의 반응';
+      
+      const scoreValue = data.scoreDiff || 0;
+      politicalScore.textContent = scoreValue > 0 ? `+${scoreValue}` : `${scoreValue}`;
+      
+      if (scoreValue > 0) {
+        politicalScore.className = 'score-value score-positive';
+        teamAvatar.textContent = '😊';
+      } else if (scoreValue < 0) {
+        politicalScore.className = 'score-value score-negative';
+        teamAvatar.textContent = '😠';
+      } else {
+        politicalScore.className = 'score-value score-neutral';
+        teamAvatar.textContent = '😐';
+      }
+      
+      if (window.ghcAddScore) {
+        window.ghcAddScore(scoreValue);
+      }
+      
+      if (window.ghcUnlock) {
+        if (data.success) {
+          if (selectedStrategy === 'merge') {
+            window.ghcUnlock('merge-master', 'Merge 마스터', 'good');
+          } else {
+            window.ghcUnlock('rebase-master', 'Rebase 마스터', 'good');
+          }
+        }
+        
+        if (data.conflicts > 5) {
+          window.ghcUnlock('conflict-resolver', '충돌 해결사', 'good');
+        }
+      }
+      
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function displayErrorResults() {
+      const resultsSection = document.getElementById('battle-results');
+      resultsSection.style.display = 'grid';
+      
+      document.getElementById('result-message').textContent = '전투 중 오류가 발생했습니다';
+      document.getElementById('git-diagram').textContent = '연결 실패';
+      document.getElementById('result-hint').textContent = '서버 연결을 확인해주세요';
+      document.getElementById('team-comment').textContent = '시스템이 다운되었나?';
+      document.getElementById('team-avatar').textContent = '🤔';
+      document.getElementById('political-score').textContent = '+0';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      createWarParticles();
+      
+      if (window.ghcMountHUD) {
+        window.ghcMountHUD({ showHome: true });
+      }
+      
+      document.querySelectorAll('.strategy-card').forEach(card => {
+        card.addEventListener('click', () => {
+          selectStrategy(card.getAttribute('data-strategy'));
+        });
       });
+      
+      const localSlider = document.getElementById('local-slider');
+      const remoteSlider = document.getElementById('remote-slider');
+      const linearCheckbox = document.getElementById('linear-pref');
+      
+      localSlider.addEventListener('input', (e) => {
+        localAhead = parseInt(e.target.value);
+        document.getElementById('local-value').textContent = localAhead;
+        updateConflictPreview();
+      });
+      
+      remoteSlider.addEventListener('input', (e) => {
+        remoteAhead = parseInt(e.target.value);
+        document.getElementById('remote-value').textContent = remoteAhead;
+        updateConflictPreview();
+      });
+      
+      linearCheckbox.addEventListener('change', (e) => {
+        teamLikesLinear = e.target.checked;
+      });
+      
+      document.getElementById('battle-button').addEventListener('click', executeBattle);
+      
+      updateConflictPreview();
+      updateStrategyPreview();
+      updateBattleButton();
+      
+      if (localStorage.getItem('mergeGameVisited') !== '1') {
+        localStorage.setItem('mergeGameVisited', '1');
+        if (window.ghcUnlock) {
+          window.ghcUnlock('strategy-beginner', '전략 입문', 'good');
+        }
+      }
     });
-
-    local.addEventListener("input", sync);
-    remote.addEventListener("input", sync);
-    sync();
   </script>
 </body>
 </html>
