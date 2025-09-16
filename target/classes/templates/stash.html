@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>📦 스태시 퍼즐</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Pretendard, sans-serif;
+      text-align: center;
+    }
+
+    .stash {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .stash:hover {
+      background: #333;
+    }
+
+    .stash.good {
+      background: #2ecc71;
+      color: #000;
+    }
+
+    .stash.bad {
+      background: #e74c3c;
+    }
+
+    .panel {
+      margin: 20px auto;
+      width: 70%;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .avatar {
+      font-size: 64px;
+      margin: 20px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      margin-top: 12px;
+      font-size: 16px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 스태시 낙인찍기</h1>
+  <p>올바른 stash를 선택해보세요</p>
+  <div id="stash-list"></div>
+  <div class="panel">
+    <div id="avatar" class="avatar">🧑‍💻</div>
+    <div id="log"></div>
+    <div id="hint" style="color:#bbb;margin-top:6px"></div>
+  </div>
+  <a class="btn" href="/">← 로비</a>
+  
+  <script>
+    function loadStash() {
+      fetch("/api/stash/list")
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById("stash-list").innerHTML = Object.entries(data)
+            .map(([k, v]) => `<div class='stash' onclick='pick("${k}")'>${k}: ${v}</div>`)
+            .join("");
+        });
+    }
+
+    function pick(key) {
+      fetch("/api/stash/pick", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({key})
+      })
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById("log").innerText = d.message;
+        document.getElementById("hint").innerText = d.hint;
+        document.getElementById("avatar").innerText = d.success ? "😎" : "😡";
+      });
+    }
+
+    loadStash();
+  </script>
+</body>
+</html>

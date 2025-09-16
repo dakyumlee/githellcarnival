@@ -20,4 +20,9 @@ public class GameViewController {
     public String resetView() {
         return "reset";
     }
+    
+    @GetMapping("/game/stash")
+    public String stashView() {
+        return "stash";
+    }
 }
