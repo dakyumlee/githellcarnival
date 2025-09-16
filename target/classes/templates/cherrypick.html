@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>🍒 체리픽 러시</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Pretendard', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 30px;
+      font-size: 2.5rem;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+    #commit-list {
+      margin: 20px auto;
+      width: 60%;
+      text-align: left;
+    }
+    .commit {
+      padding: 12px;
+      margin: 6px 0;
+      border: 1px solid #444;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .commit:hover {
+      background: #333;
+    }
+    .commit.selected {
+      background: #2ecc71;
+      color: black;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 28px;
+      font-size: 18px;
+      background: #e74c3c;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #c0392b;
+    }
+    #avatar {
+      font-size: 64px;
+      margin: 30px 0 10px;
+    }
+    #log {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+    #hint {
+      font-size: 16px;
+      margin-top: 8px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍒 체리픽 러시</h1>
+  <p>버그 픽스 커밋만 골라 체리픽하세요!</p>
+
+  <div id="commit-list"></div>
+
+  <button onclick="executeCherryPick()">🍒 Cherry-pick 실행!</button>
+
+  <div id="avatar">🧑‍💻</div>
+  <div id="log"></div>
+  <div id="hint"></div>
+
+  <script>
+    let selected = [];
+
+    function loadCommits() {
+      fetch('/api/cherrypick/commits')
+        .then(res => res.json())
+        .then(data => {
+          const list = Object.entries(data)
+            .map(([hash, msg]) => `
+              <div class="commit" onclick="toggleCommit('${hash}', this)">
+                [${hash}] ${msg}
+              </div>
+            `).join("");
+          document.getElementById("commit-list").innerHTML = list;
+        });
+    }
+
+    function toggleCommit(hash, element) {
+      if (selected.includes(hash)) {
+        selected = selected.filter(h => h !== hash);
+        element.classList.remove("selected");
+      } else {
+        selected.push(hash);
+        element.classList.add("selected");
+      }
+    }
+
+    function executeCherryPick() {
+      fetch('/api/cherrypick/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selected })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("log").innerText = data.message;
+        document.getElementById("hint").innerText = data.hint;
+        document.getElementById("avatar").innerText = data.success ? "😎" : "😡";
+      });
+    }
+
+    loadCommits();
+  </script>
+</body>
+</html>
