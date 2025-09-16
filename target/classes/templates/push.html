@@ -2,63 +2,919 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Push & Pray</title>
+    <title>🙏 Push & Pray</title>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="/css/arcade.css">
-    <style>
-        body { font-family: 'Pretendard', sans-serif; background: #111; color: #fff; text-align: center; }
-        #avatar { font-size: 64px; margin: 20px; }
-        #editor { height: 200px; width: 80%; margin: auto; border: 2px solid #555; }
-        #log { margin-top: 20px; font-size: 20px; }
-        button { margin-top: 10px; padding: 10px 20px; font-size: 18px; background: #444; color: white; border: none; cursor: pointer; }
-        button:hover { background: #666; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
-</head>
-<script src="/js/arcade.js"></script>
-<script>window.ghcMountHUD({ showHome:true });</script>
-<body>
-<header class="hud" id="hud"></header>
-    <h1>🙏 Push & Pray</h1>
-    <div id="avatar">🧑‍💻</div>
-    <div id="editor"></div>
-    <button onclick="runCommand()">🚀 실행 (Ctrl+Enter)</button>
-    <div id="log"></div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+            color: #f0f6fc;
+            font-family: 'JetBrains Mono', 'Pretendard', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 25% 75%, rgba(34, 139, 34, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 75% 25%, rgba(0, 255, 65, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .hud {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(13, 17, 23, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid #30363d;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hud-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #00ff41;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(33, 38, 45, 0.9);
+            border: 1px solid #30363d;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+        }
+
+        .hud-home {
+            background: linear-gradient(145deg, #21262d, #404040);
+            border: 1px solid #30363d;
+            color: #f0f6fc;
+            border-radius: 12px;
+            padding: 10px 16px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .hud-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .hud-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .achv {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            background: rgba(33, 38, 45, 0.9);
+            border: 1px dashed #30363d;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .title-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 65, 0.02), transparent);
+            animation: holy-light 4s infinite;
+        }
+
+        @keyframes holy-light {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #00ff41, #32cd32, #228b22, #00ff41);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: holy-gradient 3s ease-in-out infinite;
+        }
+
+        @keyframes holy-gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            color: #7d8590;
+            font-size: 1.2rem;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .prayer-chamber {
+            background: linear-gradient(145deg, #1a2e1a, #2a4a2a);
+            border: 3px solid #228b22;
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 2rem 0;
+            text-align: center;
+            box-shadow: 
+                0 0 50px rgba(34, 139, 34, 0.3),
+                inset 0 0 30px rgba(0, 255, 65, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prayer-chamber::before {
+            content: '🙏';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            background: linear-gradient(145deg, #1a2e1a, #2a4a2a);
+            padding: 0 20px;
+            border: 2px solid #228b22;
+            border-radius: 50%;
+        }
+
+        .developer-avatar {
+            font-size: 6rem;
+            margin: 2rem 0;
+            filter: drop-shadow(0 0 30px currentColor);
+            transition: all 0.5s ease;
+        }
+
+        .developer-avatar.praying { 
+            color: #00ff41; 
+            animation: pray-glow 2s infinite alternate;
+        }
+        
+        .developer-avatar.blessed { 
+            color: #ffd700; 
+            animation: blessed-glow 1s infinite;
+        }
+        
+        .developer-avatar.cursed { 
+            color: #ff6b6b; 
+            animation: cursed-shake 0.5s infinite;
+        }
+
+        @keyframes pray-glow {
+            0% { filter: drop-shadow(0 0 20px currentColor); }
+            100% { filter: drop-shadow(0 0 40px currentColor); }
+        }
+
+        @keyframes blessed-glow {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 30px gold); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 50px gold); }
+        }
+
+        @keyframes cursed-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .code-editor-container {
+            margin: 2rem 0;
+            border: 3px solid #30363d;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .code-editor-header {
+            background: linear-gradient(90deg, #21262d, #30363d);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .editor-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .editor-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .control-close { background: #ff5f56; }
+        .control-minimize { background: #ffbd2e; }
+        .control-maximize { background: #27ca3f; }
+
+        .editor-title {
+            color: #7d8590;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        #editor {
+            height: 300px;
+            width: 100%;
+        }
+
+        .execute-section {
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .execute-button {
+            background: linear-gradient(145deg, #228b22, #32cd32);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 900;
+            padding: 20px 40px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 25px rgba(34, 139, 34, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .execute-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .execute-button:hover::before {
+            left: 100%;
+        }
+
+        .execute-button:hover {
+            background: linear-gradient(145deg, #32cd32, #228b22);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 15px 40px rgba(34, 139, 34, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .execute-button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .execute-button.loading {
+            background: linear-gradient(145deg, #666, #888);
+            cursor: not-allowed;
+            animation: loading-pulse 1.5s infinite;
+        }
+
+        @keyframes loading-pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .ci-status {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: status-pulse 2s infinite;
+        }
+
+        .status-pending { background: #f9ca24; }
+        .status-success { background: #00ff41; }
+        .status-failure { background: #ff6b6b; }
+
+        @keyframes status-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        .log-output {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            min-height: 150px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .log-output::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 2px,
+                    rgba(0, 255, 0, 0.03) 4px
+                );
+            pointer-events: none;
+        }
+
+        .log-line {
+            margin: 0.3rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .log-success { color: #00ff41; }
+        .log-error { color: #ff6b6b; }
+        .log-info { color: #58a6ff; }
+        .log-warning { color: #f9ca24; }
+
+        .prayer-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+            border: 2px solid #404040;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ff41;
+            box-shadow: 0 10px 25px rgba(0, 255, 65, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00ff41;
+        }
+
+        .stat-label {
+            color: #7d8590;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #00ff41;
+            border-radius: 50%;
+            animation: particle-float 6s infinite linear;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(30px) scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .blessing-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1000;
+            animation: blessing-fade 2s ease-out forwards;
+        }
+
+        @keyframes blessing-fade {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .curse-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1000;
+            animation: curse-shake 1s ease-out forwards;
+        }
+
+        @keyframes curse-shake {
+            0%, 100% { transform: translateX(0); opacity: 0; }
+            10%, 90% { opacity: 1; }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 1rem;
+            }
+            
+            .prayer-chamber {
+                padding: 2rem 1rem;
+            }
+            
+            .developer-avatar {
+                font-size: 4rem;
+            }
+            
+            .execute-button {
+                font-size: 1.2rem;
+                padding: 15px 30px;
+            }
+            
+            .prayer-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .keyboard-hint {
+            margin-top: 1rem;
+            color: #7d8590;
+            font-size: 0.9rem;
+        }
+
+        .combo-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+
+        .success-streak { color: #00ff41; }
+        .failure-streak { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <header class="hud" id="hud">
+        <div class="hud-left">
+            <a class="hud-home" href="/">← 로비</a>
+            <div class="logo">GHC</div>
+            <div class="badge">
+                SCORE&nbsp;<span id="hud-score">1337</span>
+            </div>
+        </div>
+        <div class="hud-right" id="hud-achv">
+            <div class="achv">🙏 기도 초보</div>
+        </div>
+    </header>
+
+    <section class="title-section">
+        <h1 class="main-title">🙏 PUSH & PRAY</h1>
+        <p class="subtitle">러시안 룰렛식 CI/CD의 세계</p>
+    </section>
+
+    <main class="game-container">
+        <div class="combo-counter" id="combo-counter">
+            연속 성공: <span id="streak-count" class="success-streak">0</span>
+        </div>
+
+        <div class="prayer-chamber">
+            <div id="developer-avatar" class="developer-avatar">🧑‍💻</div>
+            <div id="prayer-message">신이시여, 이 코드를 받아주소서...</div>
+        </div>
+
+        <div class="code-editor-container">
+            <div class="code-editor-header">
+                <div class="editor-controls">
+                    <div class="editor-control control-close"></div>
+                    <div class="editor-control control-minimize"></div>
+                    <div class="editor-control control-maximize"></div>
+                </div>
+                <div class="editor-title">terminal.js — Push & Pray</div>
+            </div>
+            <div id="editor"></div>
+        </div>
+
+        <div class="execute-section">
+            <button id="execute-button" class="execute-button">
+                🚀 EXECUTE PUSH
+            </button>
+            <div class="keyboard-hint">
+                Ctrl+Enter로도 실행 가능
+            </div>
+        </div>
+
+        <div class="ci-status">
+            <div class="status-header">
+                <span class="status-indicator status-pending" id="status-indicator"></span>
+                <span id="status-text">CI/CD Pipeline Status</span>
+            </div>
+            <div class="log-output" id="log-output">
+                <div class="log-line log-info">$ git push origin main</div>
+                <div class="log-line">기도를 올리고 실행 버튼을 누르세요...</div>
+            </div>
+        </div>
+
+        <div class="prayer-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="success-count">0</div>
+                <div class="stat-label">성공한 배포</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="failure-count">0</div>
+                <div class="stat-label">실패한 배포</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="prayer-power">100</div>
+                <div class="stat-label">기도력 레벨</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/arcade.js"></script>
     <script>
         let editor;
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
-        require(["vs/editor/editor.main"], function () {
-            editor = monaco.editor.create(document.getElementById('editor'), {
-                value: "git add .\n",
-                language: "shell",
-                theme: "vs-dark",
-                automaticLayout: true
-            });
-        });
+        let successCount = parseInt(localStorage.getItem('pushSuccessCount') || '0');
+        let failureCount = parseInt(localStorage.getItem('pushFailureCount') || '0');
+        let prayerPower = parseInt(localStorage.getItem('prayerPower') || '100');
+        let currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
+        let isExecuting = false;
 
-        function runCommand() {
-            fetch('/api/execute', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ command: editor.getValue() })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const log = document.getElementById("log");
-                const avatar = document.getElementById("avatar");
-                log.innerText = data.message;
-                if (data.success) {
-                    avatar.innerText = "😎";
-                } else {
-                    avatar.innerText = "😡";
-                }
+        function createHolyParticles() {
+            const particles = document.getElementById('particles');
+            particles.innerHTML = '';
+            
+            const colors = ['#00ff41', '#32cd32', '#228b22', '#90EE90'];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particles.appendChild(particle);
+            }
+        }
+
+        function initializeEditor() {
+            require.config({ 
+                paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }
+            });
+            
+            require(["vs/editor/editor.main"], function () {
+                editor = monaco.editor.create(document.getElementById('editor'), {
+                    value: `git add .\ngit commit -m "feat: 새로운 기능 추가"\ngit push origin main`,
+                    language: "shell",
+                    theme: "vs-dark",
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: 'JetBrains Mono, monospace',
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    roundedSelection: false,
+                    padding: { top: 15, bottom: 15 }
+                });
+
+                editor.onDidChangeModelContent(() => {
+                    updatePrayerMessage();
+                });
             });
         }
 
-        document.addEventListener("keydown", function (e) {
-            if (e.ctrlKey && e.key === "Enter") {
-                runCommand();
+        function updatePrayerMessage() {
+            const messages = [
+                "신이시여, 이 코드를 받아주소서...",
+                "제발 빌드가 깨지지 않기를...",
+                "모든 테스트가 통과하게 해주세요...",
+                "팀장님께 들키지 않게 해주세요...",
+                "배포가 성공하게 해주시길...",
+                "충돌이 없기를 빕니다..."
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            document.getElementById('prayer-message').textContent = randomMessage;
+        }
+
+        function updateStats() {
+            document.getElementById('success-count').textContent = successCount;
+            document.getElementById('failure-count').textContent = failureCount;
+            document.getElementById('prayer-power').textContent = prayerPower;
+            document.getElementById('streak-count').textContent = currentStreak;
+            
+            const streakElement = document.getElementById('streak-count');
+            streakElement.className = currentStreak > 0 ? 'success-streak' : 'failure-streak';
+            
+            localStorage.setItem('pushSuccessCount', successCount);
+            localStorage.setItem('pushFailureCount', failureCount);
+            localStorage.setItem('prayerPower', prayerPower);
+            localStorage.setItem('currentStreak', currentStreak);
+        }
+
+        function showEffect(type) {
+            const effect = document.createElement('div');
+            effect.className = type === 'success' ? 'blessing-effect' : 'curse-effect';
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 2000);
+        }
+
+        function updateDeveloperState(state) {
+            const avatar = document.getElementById('developer-avatar');
+            const avatars = {
+                praying: '🙏',
+                blessed: '😇',
+                cursed: '😭',
+                neutral: '🧑‍💻',
+                shocked: '😱',
+                relieved: '😮‍💨'
+            };
+            
+            avatar.textContent = avatars[state] || avatars.neutral;
+            avatar.className = `developer-avatar ${state}`;
+        }
+
+        function addLogLine(message, type = 'info') {
+            const logOutput = document.getElementById('log-output');
+            const line = document.createElement('div');
+            line.className = `log-line log-${type}`;
+            line.textContent = message;
+            
+            logOutput.appendChild(line);
+            
+            if (logOutput.children.length > 15) {
+                logOutput.removeChild(logOutput.firstChild);
+            }
+            
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function updateStatus(status, message) {
+            const indicator = document.getElementById('status-indicator');
+            const text = document.getElementById('status-text');
+            
+            indicator.className = `status-indicator status-${status}`;
+            text.textContent = message;
+        }
+
+        async function executePush() {
+            if (isExecuting) return;
+            
+            isExecuting = true;
+            const button = document.getElementById('execute-button');
+            button.classList.add('loading');
+            button.textContent = '기도 중...';
+            
+            updateDeveloperState('praying');
+            updateStatus('pending', 'CI/CD Pipeline 실행 중...');
+            addLogLine('🙏 기도를 올리고 있습니다...', 'info');
+            addLogLine('Connecting to remote repository...', 'info');
+            
+            const prayerTime = Math.random() * 2000 + 1000;
+            await new Promise(resolve => setTimeout(resolve, prayerTime));
+            
+            try {
+                const response = await fetch('/api/execute', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: editor.getValue() })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    handleSuccess(data);
+                } else {
+                    handleFailure(data);
+                }
+                
+            } catch (error) {
+                addLogLine('💥 서버 연결 실패', 'error');
+                handleFailure({ message: '서버와의 연결이 끊어졌습니다.' });
+            }
+            
+            setTimeout(() => {
+                button.classList.remove('loading');
+                button.textContent = '🚀 EXECUTE PUSH';
+                isExecuting = false;
+            }, 1000);
+        }
+
+        function handleSuccess(data) {
+            successCount++;
+            currentStreak++;
+            prayerPower = Math.min(200, prayerPower + 10);
+            
+            updateStats();
+            updateDeveloperState('blessed');
+            updateStatus('success', '🎉 배포 성공!');
+            showEffect('success');
+            
+            addLogLine('✅ Push successful!', 'success');
+            addLogLine('🎉 All tests passed!', 'success');
+            addLogLine('🚀 Deployment completed!', 'success');
+            
+            if (window.ghcAddScore) {
+                window.ghcAddScore(100 + (currentStreak * 10));
+            }
+            
+            if (window.ghcUnlock) {
+                if (successCount === 1) {
+                    window.ghcUnlock('first-push', '첫 번째 성공', 'good');
+                }
+                if (currentStreak >= 5) {
+                    window.ghcUnlock('hot-streak', '연승 행진', 'good');
+                }
+                if (successCount >= 10) {
+                    window.ghcUnlock('veteran', '배포 베테랑', 'good');
+                }
+            }
+            
+            setTimeout(() => {
+                updateDeveloperState('relieved');
+            }, 2000);
+        }
+
+        function handleFailure(data) {
+            failureCount++;
+            currentStreak = 0;
+            prayerPower = Math.max(0, prayerPower - 20);
+            
+            updateStats();
+            updateDeveloperState('cursed');
+            updateStatus('failure', '💥 배포 실패!');
+            showEffect('failure');
+            
+            const errorMessages = [
+                '❌ Build failed!',
+                '💥 Tests are failing!',
+                '🚫 Merge conflicts detected!',
+                '⚠️ Linting errors found!',
+                '🔥 Code review rejected!'
+            ];
+            
+            const randomError = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+            addLogLine(randomError, 'error');
+            addLogLine(data.message || '알 수 없는 오류가 발생했습니다.', 'error');
+            
+            if (window.ghcAddScore) {
+                window.ghcAddScore(-50);
+            }
+            
+            if (window.ghcUnlock) {
+                if (failureCount >= 5) {
+                    window.ghcUnlock('disaster-master', '재앙의 마스터', 'bad');
+                }
+                if (failureCount >= 1) {
+                    window.ghcUnlock('first-fail', '첫 번째 실패', 'bad');
+                }
+            }
+            
+            setTimeout(() => {
+                updateDeveloperState('shocked');
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createHolyParticles();
+            initializeEditor();
+            updateStats();
+            
+            if (window.ghcMountHUD) {
+                window.ghcMountHUD({ showHome: true });
+            }
+            
+            document.getElementById('execute-button').addEventListener('click', executePush);
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    executePush();
+                }
+            });
+            
+            setInterval(updatePrayerMessage, 5000);
+            
+            if (localStorage.getItem('pushGameVisited') !== '1') {
+                localStorage.setItem('pushGameVisited', '1');
+                if (window.ghcUnlock) {
+                    window.ghcUnlock('push-beginner', 'Push 입문', 'good');
+                }
             }
         });
     </script>
