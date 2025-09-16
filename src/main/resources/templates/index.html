@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Git Hell Carnival</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="arcade">
+        <h1>🎮 Git Hell Carnival</h1>
+        <p th:text="${message}"></p>
+        <button onclick="location.href='/game/push'">🙏 Push & Pray</button>
+        <button onclick="location.href='/game/cherrypick'">🍒 체리픽 러시</button>
+        <button onclick="location.href='/game/reset'">🔥 Reset 시뮬레이터</button>
+        <button onclick="location.href='/game/stash'">📦 스태시 낙인찍기</button>
+        <button onclick="location.href='/game/detached'">🧑‍🦲 Detached HEAD 러너</button>
+        <button onclick="location.href='/game/merge'">⚔️ Merge vs Rebase</button>
+        <button onclick="location.href='/game/review'">🤡 코드 리뷰 배틀</button>
+    </div>
+</body>
+</html>
