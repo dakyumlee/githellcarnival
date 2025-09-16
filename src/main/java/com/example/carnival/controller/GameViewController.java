@@ -66,7 +66,7 @@ public class GameViewController {
         return "hotfix";
     }
 
-    @GetMapping("/game/tsunami") 
+    @GetMapping("/game/tsunami")
     public String tsunamiView() {
         return "tsunami";
     }
