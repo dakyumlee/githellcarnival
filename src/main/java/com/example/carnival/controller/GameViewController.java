@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GameViewController {
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
+	@GetMapping("/arcade")
+	public String arcade() {
+	    return "index";
+	 }
 
     @GetMapping("/game/push")
     public String pushView() {

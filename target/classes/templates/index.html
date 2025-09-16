@@ -1,65 +1,88 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Git Hell Carnival</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        body {
-            background: #111;
-            color: #fff;
-            font-family: 'Pretendard', sans-serif;
-            text-align: center;
-        }
-        .arcade {
-            display: inline-block;
-            padding: 30px;
-            background: #222;
-            border: 4px solid #555;
-            border-radius: 10px;
-            margin-top: 50px;
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        p {
-            margin-bottom: 20px;
-        }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        button {
-            padding: 15px;
-            font-size: 18px;
-            background: #333;
-            color: #fff;
-            border: 2px solid #666;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        button:hover {
-            background: #555;
-            transform: scale(1.05);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>🎮 Git Hell Carnival</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/arcade.css">
 </head>
-<body>
-    <div class="arcade">
-        <h1>🎮 Git Hell Carnival</h1>
-        <p th:text="${message}"></p>
-        <div class="menu-grid">
-            <button onclick="location.href='/game/push'">🙏 Push & Pray</button>
-            <button onclick="location.href='/game/cherrypick'">🍒 체리픽 러시</button>
-            <button onclick="location.href='/game/reset'">🔥 Reset 시뮬레이터</button>
-            <button onclick="location.href='/game/stash'">📦 스태시 낙인찍기</button>
-            <button onclick="location.href='/game/detached'">🧑‍🦲 Detached HEAD 러너</button>
-            <button onclick="location.href='/game/merge'">⚔️ Merge vs Rebase</button>
-            <button onclick="location.href='/game/review'">🤡 코드 리뷰 배틀</button>
-        </div>
+<body class="arcade-body">
+  <header class="hud" id="hud"></header>
+
+  <main class="arcade-wrap">
+    <div class="marquee">
+      <div class="marquee-line">★ GIT HELL CARNIVAL ★ PUSH & PRAY ★ CHERRY-PICK RUSH ★ RESET SIMULATOR ★ STASH PUZZLE ★ DETACHED HEAD RUNNER ★ MERGE vs REBASE ★ CODE REVIEW BATTLE ★</div>
     </div>
+
+    <section class="cabinet-grid">
+      <a class="cabinet" href="/game/push">
+        <div class="cabinet-screen">🙏</div>
+        <div class="cabinet-title">Push & Pray</div>
+        <div class="cabinet-meta">러시안 룰렛식 CI</div>
+        <button class="btn-play">Play</button>
+      </a>
+
+      <a class="cabinet" href="/game/cherrypick">
+        <div class="cabinet-screen">🍒</div>
+        <div class="cabinet-title">체리픽 러시</div>
+        <div class="cabinet-meta">커밋 필터링</div>
+        <button class="btn-play">Play</button>
+      </a>
+
+      <a class="cabinet" href="/game/reset">
+        <div class="cabinet-screen">🔥</div>
+        <div class="cabinet-title">Reset 시뮬레이터</div>
+        <div class="cabinet-meta">soft/mixed/hard</div>
+        <button class="btn-play">Play</button>
+      </a>
+
+      <a class="cabinet" href="/game/stash">
+        <div class="cabinet-screen">📦</div>
+        <div class="cabinet-title">스태시 퍼즐</div>
+        <div class="cabinet-meta">잊힌 코드 수색</div>
+        <button class="btn-play">Play</button>
+      </a>
+
+      <a class="cabinet" href="/game/detached">
+        <div class="cabinet-screen">🧑‍🦲</div>
+        <div class="cabinet-title">Detached 러너</div>
+        <div class="cabinet-meta">브랜치 착지</div>
+        <button class="btn-play">Play</button>
+      </a>
+
+      <a class="cabinet" href="/game/merge">
+        <div class="cabinet-screen">⚔️</div>
+        <div class="cabinet-title">Merge vs Rebase</div>
+        <div class="cabinet-meta">전략 선택</div>
+        <button class="btn-play">Play</button>
+      </a>
+
+      <a class="cabinet" href="/game/review">
+        <div class="cabinet-screen">🤡</div>
+        <div class="cabinet-title">코드 리뷰 배틀</div>
+        <div class="cabinet-meta">리팩토링 점수</div>
+        <button class="btn-play">Play</button>
+      </a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>© Git Hell Carnival</div>
+    <div class="footer-links">
+      <button class="btn" id="reset-progress">진행 초기화</button>
+    </div>
+  </footer>
+
+  <script src="/js/arcade.js"></script>
+  <script>
+    window.ghcMountHUD({ showHome:false });
+    if(localStorage.getItem('ghcVisited')!=='1'){
+      localStorage.setItem('ghcVisited','1');
+      ghcUnlock('newbie','첫 방문','good');
+    }
+    document.getElementById('reset-progress').addEventListener('click',()=>{ ghcResetProgress(); });
+  </script>
 </body>
 </html>
