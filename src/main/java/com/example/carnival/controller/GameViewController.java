@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GameViewController {
 
-    @GetMapping("/push")
+    @GetMapping("/game/push")
     public String pushView() {
         return "push";
     }
