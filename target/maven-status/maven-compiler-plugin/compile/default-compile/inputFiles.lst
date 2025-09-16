@@ -1,5 +1,6 @@
 /Users/mac/Documents/workspace-spring-tools-for-eclipse-4.31.0.RELEASE/git-hell-carnival/src/main/java/com/example/carnival/GitHellCarnivalApplication.java
 /Users/mac/Documents/workspace-spring-tools-for-eclipse-4.31.0.RELEASE/git-hell-carnival/src/main/java/com/example/carnival/controller/GameApiController.java
 /Users/mac/Documents/workspace-spring-tools-for-eclipse-4.31.0.RELEASE/git-hell-carnival/src/main/java/com/example/carnival/GameController.java
+/Users/mac/Documents/workspace-spring-tools-for-eclipse-4.31.0.RELEASE/git-hell-carnival/src/main/java/com/example/carnival/api/ResetApi.java
 /Users/mac/Documents/workspace-spring-tools-for-eclipse-4.31.0.RELEASE/git-hell-carnival/src/main/java/com/example/carnival/controller/GameViewController.java
 /Users/mac/Documents/workspace-spring-tools-for-eclipse-4.31.0.RELEASE/git-hell-carnival/src/main/java/com/example/carnival/api/CherryPickApi.java

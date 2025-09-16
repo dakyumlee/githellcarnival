@@ -15,4 +15,9 @@ public class GameViewController {
     public String cherryPickView() {
         return "cherrypick";
     }
+    
+    @GetMapping("/game/reset")
+    public String resetView() {
+        return "reset";
+    }
 }

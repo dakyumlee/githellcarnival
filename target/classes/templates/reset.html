@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 Reset 시뮬레이터</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Pretendard, sans-serif;
+      margin: 0;
+    }
+
+    header {
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 2.2rem;
+    }
+
+    .sub {
+      color: #bbb;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #2f2f2f;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .kpi {
+      font-size: 28px;
+      margin-top: 8px;
+    }
+
+    .mini {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 6px;
+    }
+
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .mode {
+      background: #1b1b1b;
+      border: 1px solid #2b2b2b;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .mode:hover {
+      transform: translateY(-2px);
+    }
+
+    .mode.active {
+      outline: 2px solid #6ea8ff;
+      background: #21293a;
+    }
+
+    .mode .mname {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .hint {
+      color: #aaa;
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .btn {
+      background: #e74c3c;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn:hover {
+      background: #c0392b;
+    }
+
+    .btn.sec {
+      background: #333;
+    }
+
+    .btn.sec:hover {
+      background: #555;
+    }
+
+    .panel {
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .log {
+      min-height: 28px;
+      font-size: 18px;
+    }
+
+    .avatar {
+      font-size: 56px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .back {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <a class="btn sec back" href="/">← 로비</a>
+  <header>
+    <h1>🔥 Reset 시뮬레이터</h1>
+    <div class="sub">soft / mixed / hard 차이를 몸으로 이해해보기</div>
+  </header>
+  <div class="wrap">
+    <div class="board">
+      <div class="card">
+        <div class="title">HEAD (앞선 커밋 수)</div>
+        <div id="kpi-ahead" class="kpi">2</div>
+        <div class="mini">브랜치가 원격보다 얼마나 앞서는지</div>
+      </div>
+      <div class="card">
+        <div class="title">Staging Area</div>
+        <div id="kpi-staged" class="kpi">1</div>
+        <div class="mini">git add 로 올린 변경</div>
+      </div>
+      <div class="card">
+        <div class="title">Working Tree</div>
+        <div id="kpi-working" class="kpi">4</div>
+        <div class="mini">파일에 남아있는 수정</div>
+      </div>
+    </div>
+
+    <div class="modes">
+      <div class="mode" data-mode="soft">
+        <div class="mname">--soft</div>
+        <div>HEAD만 이동, 변경은 스테이징에 남음</div>
+        <div class="hint">git reset --soft HEAD~1</div>
+      </div>
+      <div class="mode" data-mode="mixed">
+        <div class="mname">--mixed</div>
+        <div>HEAD+인덱스 이동, 변경은 작업트리에 남음</div>
+        <div class="hint">git reset --mixed HEAD~1</div>
+      </div>
+      <div class="mode" data-mode="hard">
+        <div class="mname">--hard</div>
+        <div>HEAD+인덱스+작업트리를 되돌림</div>
+        <div class="hint">git reset --hard HEAD~1</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="btn-rand" class="btn sec">무대 셔플</button>
+      <button id="btn-run" class="btn">실행</button>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="title">결과</div>
+        <div id="log" class="log"></div>
+        <div id="hint" class="mini"></div>
+      </div>
+      <div class="panel">
+        <div class="title">아바타</div>
+        <div id="avatar" class="avatar">🧑‍💻</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let ahead = 2;
+    let staged = 1;
+    let working = 4;
+    let selected = "mixed";
+
+    function el(id) {
+      return document.getElementById(id);
+    }
+
+    function setKpi() {
+      el("kpi-ahead").innerText = ahead;
+      el("kpi-staged").innerText = staged;
+      el("kpi-working").innerText = working;
+    }
+
+    function pickMode(m) {
+      selected = m;
+      document.querySelectorAll(".mode").forEach(x => x.classList.remove("active"));
+      document.querySelector(`.mode[data-mode="${m}"]`).classList.add("active");
+    }
+
+    function shuffle() {
+      ahead = Math.floor(Math.random() * 3) + 1;
+      staged = Math.floor(Math.random() * 3);
+      working = Math.floor(Math.random() * 6);
+      setKpi();
+      el("log").innerText = "무대가 섞였습니다";
+      el("hint").innerText = "모드를 고르고 실행을 눌러보세요";
+      el("avatar").innerText = "🧑‍💻";
+    }
+
+    document.querySelectorAll(".mode").forEach(x => x.addEventListener("click", () => pickMode(x.getAttribute("data-mode"))));
+    el("btn-rand").addEventListener("click", shuffle);
+    el("btn-run").addEventListener("click", () => {
+      fetch("/api/reset/execute", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({mode: selected, aheadCommits: ahead, stagedChanges: staged, workingChanges: working})})
+      .then(r => r.json()).then(d => {
+        ahead = d.aheadCommits;
+        staged = d.stagedChanges;
+        working = d.workingChanges;
+        setKpi();
+        el("log").innerText = d.message + (d.scoreDiff > 0 ? ` (+${d.scoreDiff})` : ` (${d.scoreDiff})`);
+        el("hint").innerText = d.hint;
+        el("avatar").innerText = d.success ? "😎" : "😡";
+      });
+    });
+
+    pickMode("mixed");
+    setKpi();
+    el("hint").innerText = "모드를 고르고 실행을 눌러보세요";
+  </script>
+</body>
+</html>
