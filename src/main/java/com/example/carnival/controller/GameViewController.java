@@ -10,6 +10,11 @@ public class GameViewController {
     public String arcade() {
         return "index";
     }
+    
+    @GetMapping("/game/tutorial")
+    public String tutorialView() {
+        return "TutorialMode";
+    }
 
     @GetMapping("/game/push")
     public String pushView() {
@@ -59,10 +64,5 @@ public class GameViewController {
     @GetMapping("/game/tsunami") 
     public String tsunamiView() {
         return "tsunami";
-    }
-    
-    @GetMapping("/game/tutorial")
-    public String tutorialView() {
-        return "TutorialMode";
     }
 }
