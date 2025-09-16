@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Push & Pray</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #111; color: #fff; text-align: center; }
+        #avatar { font-size: 64px; margin: 20px; }
+        #editor { height: 200px; width: 80%; margin: auto; border: 2px solid #555; }
+        #log { margin-top: 20px; font-size: 20px; }
+        button { margin-top: 10px; padding: 10px 20px; font-size: 18px; background: #444; color: white; border: none; cursor: pointer; }
+        button:hover { background: #666; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <h1>🙏 Push & Pray</h1>
+    <div id="avatar">🧑‍💻</div>
+    <div id="editor"></div>
+    <button onclick="runCommand()">🚀 실행 (Ctrl+Enter)</button>
+    <div id="log"></div>
+
+    <script>
+        let editor;
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+        require(["vs/editor/editor.main"], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: "git add .\n",
+                language: "shell",
+                theme: "vs-dark",
+                automaticLayout: true
+            });
+        });
+
+        function runCommand() {
+            fetch('/api/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: editor.getValue() })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const log = document.getElementById("log");
+                const avatar = document.getElementById("avatar");
+                log.innerText = data.message;
+                if (data.success) {
+                    avatar.innerText = "😎";
+                } else {
+                    avatar.innerText = "😡";
+                }
+            });
+        }
+
+        document.addEventListener("keydown", function (e) {
+            if (e.ctrlKey && e.key === "Enter") {
+                runCommand();
+            }
+        });
+    </script>
+</body>
+</html>
