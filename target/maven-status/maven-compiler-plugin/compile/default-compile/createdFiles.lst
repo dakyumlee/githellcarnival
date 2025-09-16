@@ -3,6 +3,7 @@ com/example/carnival/api/CherryPickApi$1.class
 com/example/carnival/GitHellCarnivalApplication.class
 com/example/carnival/api/CherryPickApi.class
 com/example/carnival/controller/GameApiController.class
+com/example/carnival/api/DetachedApi.class
 com/example/carnival/api/StashApi.class
 com/example/carnival/api/ResetApi$ResetRequest.class
 com/example/carnival/GameController.class

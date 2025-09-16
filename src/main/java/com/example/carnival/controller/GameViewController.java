@@ -25,4 +25,10 @@ public class GameViewController {
     public String stashView() {
         return "stash";
     }
+    
+    @GetMapping("/game/detached")
+    public String detachedView() {
+        return "detached";
+    }
+
 }
