@@ -4,18 +4,62 @@
     <meta charset="UTF-8">
     <title>Git Hell Carnival</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background: #111;
+            color: #fff;
+            font-family: 'Pretendard', sans-serif;
+            text-align: center;
+        }
+        .arcade {
+            display: inline-block;
+            padding: 30px;
+            background: #222;
+            border: 4px solid #555;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        button {
+            padding: 15px;
+            font-size: 18px;
+            background: #333;
+            color: #fff;
+            border: 2px solid #666;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background: #555;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
     <div class="arcade">
         <h1>🎮 Git Hell Carnival</h1>
         <p th:text="${message}"></p>
-        <button onclick="location.href='/game/push'">🙏 Push & Pray</button>
-        <button onclick="location.href='/game/cherrypick'">🍒 체리픽 러시</button>
-        <button onclick="location.href='/game/reset'">🔥 Reset 시뮬레이터</button>
-        <button onclick="location.href='/game/stash'">📦 스태시 낙인찍기</button>
-        <button onclick="location.href='/game/detached'">🧑‍🦲 Detached HEAD 러너</button>
-        <button onclick="location.href='/game/merge'">⚔️ Merge vs Rebase</button>
-        <button onclick="location.href='/game/review'">🤡 코드 리뷰 배틀</button>
+        <div class="menu-grid">
+            <button onclick="location.href='/game/push'">🙏 Push & Pray</button>
+            <button onclick="location.href='/game/cherrypick'">🍒 체리픽 러시</button>
+            <button onclick="location.href='/game/reset'">🔥 Reset 시뮬레이터</button>
+            <button onclick="location.href='/game/stash'">📦 스태시 낙인찍기</button>
+            <button onclick="location.href='/game/detached'">🧑‍🦲 Detached HEAD 러너</button>
+            <button onclick="location.href='/game/merge'">⚔️ Merge vs Rebase</button>
+            <button onclick="location.href='/game/review'">🤡 코드 리뷰 배틀</button>
+        </div>
     </div>
 </body>
 </html>
