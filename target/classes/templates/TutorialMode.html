@@ -5,6 +5,8 @@
   <title>📚 Git 튜토리얼</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/arcade.css">
+  
   <style>
     * {
       margin: 0;
@@ -13,24 +15,11 @@
     }
 
     body {
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+      background: #0d1117;
       color: #f0f6fc;
       font-family: 'JetBrains Mono', 'Pretendard', monospace;
       min-height: 100vh;
       overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 30% 70%, rgba(34, 139, 34, 0.03) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 30%, rgba(65, 105, 225, 0.02) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: -2;
     }
 
     .hud {
@@ -74,18 +63,19 @@
     }
 
     .hud-home {
-      background: linear-gradient(145deg, #21262d, #404040);
+      background: #21262d;
       border: 1px solid #30363d;
       color: #f0f6fc;
       border-radius: 12px;
       padding: 10px 16px;
       transition: all 0.3s ease;
       font-weight: 600;
+      text-decoration: none;
     }
 
     .hud-home:hover {
+      background: #404040;
       transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
 
     .title-section {
@@ -99,16 +89,7 @@
       font-size: clamp(2.5rem, 8vw, 4rem);
       font-weight: 900;
       margin-bottom: 0.5rem;
-      background: linear-gradient(45deg, #4169e1, #00ff41, #58a6ff, #4169e1);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: learn-gradient 4s ease-in-out infinite;
-    }
-
-    @keyframes learn-gradient {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+      color: #4169e1;
     }
 
     .subtitle {
@@ -123,15 +104,15 @@
       padding: 2rem;
     }
 
-    .lesson-selector {
+    .lesson-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
       gap: 2rem;
       margin: 3rem 0;
     }
 
     .lesson-card {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      background: #1c1c1c;
       border: 2px solid #404040;
       border-radius: 20px;
       padding: 2rem;
@@ -139,22 +120,6 @@
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
-    }
-
-    .lesson-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-      transform: translateX(-100%) translateY(-100%) rotate(45deg);
-      transition: transform 0.6s;
-    }
-
-    .lesson-card:hover::before {
-      transform: translateX(100%) translateY(100%) rotate(45deg);
     }
 
     .lesson-card:hover {
@@ -165,12 +130,12 @@
 
     .lesson-card.completed {
       border-color: #00ff41;
-      background: linear-gradient(145deg, #0f2f0f, #1f3f1f);
+      background: #0f2f0f;
     }
 
     .lesson-card.current {
       border-color: #ffa500;
-      background: linear-gradient(145deg, #2a1a0d, #4a2a1a);
+      background: #2a1a0d;
       animation: current-pulse 2s infinite;
     }
 
@@ -191,27 +156,41 @@
       font-weight: 800;
       margin-bottom: 1rem;
       text-align: center;
+      color: #f0f6fc;
     }
 
     .lesson-desc {
       color: #7d8590;
       line-height: 1.5;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       font-family: 'Pretendard', sans-serif;
+      text-align: center;
     }
 
-    .lesson-progress {
-      background: #30363d;
-      height: 6px;
-      border-radius: 3px;
-      overflow: hidden;
+    .lesson-status {
+      text-align: center;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
     }
 
-    .lesson-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4169e1, #00ff41);
-      border-radius: 3px;
-      transition: width 0.5s ease;
+    .status-completed {
+      background: rgba(0, 255, 65, 0.2);
+      color: #00ff41;
+      border: 1px solid #00ff41;
+    }
+
+    .status-current {
+      background: rgba(255, 165, 0, 0.2);
+      color: #ffa500;
+      border: 1px solid #ffa500;
+    }
+
+    .status-locked {
+      background: rgba(125, 133, 144, 0.2);
+      color: #7d8590;
+      border: 1px solid #7d8590;
     }
 
     .tutorial-modal {
@@ -229,7 +208,7 @@
     }
 
     .modal-content {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+      background: #1c1c1c;
       border: 2px solid #58a6ff;
       border-radius: 20px;
       width: 90%;
@@ -249,6 +228,7 @@
       font-size: 2rem;
       font-weight: 900;
       margin-bottom: 0.5rem;
+      color: #4169e1;
     }
 
     .modal-subtitle {
@@ -315,24 +295,6 @@
       overflow: hidden;
     }
 
-    .command-demo::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(88, 166, 255, 0.03) 2px,
-          rgba(88, 166, 255, 0.03) 4px
-        );
-      pointer-events: none;
-    }
-
     .command-line {
       margin: 0.5rem 0;
       position: relative;
@@ -354,7 +316,7 @@
     }
 
     .mini-game {
-      background: linear-gradient(145deg, #2a1a2a, #4a2a4a);
+      background: #2a1a2a;
       border: 2px solid #ffa500;
       border-radius: 15px;
       padding: 2rem;
@@ -370,7 +332,7 @@
     }
 
     .practice-button {
-      background: linear-gradient(145deg, #4169e1, #58a6ff);
+      background: #4169e1;
       border: none;
       color: white;
       font-size: 1.1rem;
@@ -383,15 +345,15 @@
     }
 
     .practice-button:hover {
-      background: linear-gradient(145deg, #58a6ff, #4169e1);
+      background: #58a6ff;
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(65, 105, 225, 0.4);
     }
 
     .next-button {
-      background: linear-gradient(145deg, #00ff41, #32cd32);
+      background: #00ff41;
       border: none;
-      color: white;
+      color: #000;
       font-size: 1.2rem;
       font-weight: 800;
       padding: 15px 30px;
@@ -403,76 +365,13 @@
     }
 
     .next-button:hover {
-      background: linear-gradient(145deg, #32cd32, #00ff41);
+      background: #32cd32;
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(0, 255, 65, 0.4);
     }
 
-    .visual-diagram {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 2rem;
-      margin: 1.5rem 0;
-      font-family: 'JetBrains Mono', monospace;
-      text-align: center;
-    }
-
-    .branch-line {
-      margin: 0.5rem 0;
-      font-size: 1.1rem;
-    }
-
-    .commit-node {
-      color: #f1e05a;
-      font-weight: 800;
-    }
-
-    .branch-name {
-      color: #00ff41;
-      font-weight: 800;
-    }
-
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: -1;
-    }
-
-    .particle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: #58a6ff;
-      border-radius: 50%;
-      animation: learn-float 15s infinite linear;
-    }
-
-    @keyframes learn-float {
-      0% {
-        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
-        opacity: 0;
-      }
-      5% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      95% {
-        opacity: 0.5;
-      }
-      100% {
-        transform: translateY(-10vh) translateX(50px) scale(0) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
     .quiz-section {
-      background: linear-gradient(145deg, #1a0d2a, #2a1a4a);
+      background: #1a0d2a;
       border: 2px solid #9370db;
       border-radius: 15px;
       padding: 2rem;
@@ -516,12 +415,50 @@
       background: rgba(255, 107, 107, 0.2);
     }
 
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #4169e1;
+      border-radius: 50%;
+      animation: learn-float 15s infinite linear;
+    }
+
+    @keyframes learn-float {
+      0% {
+        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      95% {
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-10vh) translateX(50px) scale(0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
     @media (max-width: 768px) {
       .tutorial-container {
         padding: 1rem;
       }
       
-      .lesson-selector {
+      .lesson-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
       }
@@ -537,6 +474,8 @@
     }
   </style>
 </head>
+<script src="/js/arcade.js"></script>
+<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
   <div class="particles" id="particles"></div>
   
@@ -556,12 +495,11 @@
   </section>
 
   <main class="tutorial-container">
-    <div class="lesson-selector" id="lesson-selector">
-      <!-- 레슨 카드들이 여기에 동적으로 생성됩니다 -->
+    <div class="lesson-grid" id="lesson-grid">
+      <!-- 레슨 카드들이 여기에 생성됩니다 -->
     </div>
   </main>
 
-  <!-- 튜토리얼 모달 -->
   <div class="tutorial-modal" id="tutorial-modal">
     <div class="modal-content">
       <button class="close-button" id="close-modal">&times;</button>
@@ -575,7 +513,6 @@
     </div>
   </div>
 
-  <script src="/js/arcade.js"></script>
   <script>
     const lessons = [
       {
@@ -616,10 +553,6 @@
             {
               title: 'git add의 역할',
               text: '작업 디렉토리의 변경사항을 스테이징 영역으로 옮기는 명령어입니다. 커밋하고 싶은 변경사항만 선별적으로 스테이징할 수 있습니다.'
-            },
-            {
-              title: 'git commit의 역할',
-              text: '스테이징 영역의 변경사항들을 하나의 스냅샷으로 만들어 저장소에 영구 저장합니다. 각 커밋은 고유한 ID를 가집니다.'
             }
           ],
           commands: [
@@ -627,12 +560,7 @@
             { command: 'git add .', desc: '모든 변경사항을 스테이징' },
             { command: 'git commit -m "커밋 메시지"', desc: '스테이징된 파일들을 커밋' }
           ],
-          practice: 'push-pray',
-          quiz: {
-            question: 'git add 명령어의 목적은?',
-            options: ['파일을 삭제한다', '변경사항을 스테이징 영역으로 옮긴다', '커밋을 생성한다', '브랜치를 변경한다'],
-            correct: 1
-          }
+          practice: 'push'
         }
       },
       {
@@ -644,29 +572,13 @@
           concepts: [
             {
               title: '브랜치란?',
-              text: '독립적인 작업 라인을 만들어 여러 기능을 동시에 개발할 수 있게 해주는 Git의 핵심 기능입니다. 메인 코드에 영향을 주지 않고 실험할 수 있습니다.'
-            },
-            {
-              title: '브랜치 전략',
-              text: 'main/master: 배포 가능한 안정적인 코드\ndevelop: 개발 중인 코드\nfeature: 새로운 기능 개발\nhotfix: 긴급 버그 수정'
+              text: '독립적인 작업 라인을 만들어 여러 기능을 동시에 개발할 수 있게 해주는 Git의 핵심 기능입니다.'
             }
           ],
           commands: [
             { command: 'git branch', desc: '브랜치 목록 확인' },
-            { command: 'git branch feature-name', desc: '새 브랜치 생성' },
-            { command: 'git checkout branch-name', desc: '브랜치 전환' },
             { command: 'git checkout -b new-branch', desc: '브랜치 생성 후 전환' }
-          ],
-          diagram: `
-main     ●─●─●─●─●
-              ╲
-feature        ●─●─●
-          `,
-          quiz: {
-            question: '새 브랜치를 생성하고 바로 전환하는 명령어는?',
-            options: ['git branch -new', 'git checkout -b branch-name', 'git switch new', 'git create branch'],
-            correct: 1
-          }
+          ]
         }
       },
       {
@@ -678,20 +590,14 @@ feature        ●─●─●
           concepts: [
             {
               title: 'Merge vs Rebase',
-              text: 'Merge: 두 브랜치의 변경사항을 합쳐 새로운 머지 커밋을 생성합니다. 히스토리가 보존되지만 복잡해집니다.\n\nRebase: 한 브랜치의 커밋들을 다른 브랜치 위로 재배치합니다. 깔끔한 직선 히스토리를 만들지만 기존 히스토리가 변경됩니다.'
+              text: 'Merge: 두 브랜치의 변경사항을 합쳐 새로운 머지 커밋을 생성합니다.\nRebase: 한 브랜치의 커밋들을 다른 브랜치 위로 재배치합니다.'
             }
           ],
           commands: [
             { command: 'git merge feature-branch', desc: '현재 브랜치에 feature-branch 병합' },
-            { command: 'git rebase main', desc: '현재 브랜치를 main 위로 재배치' },
-            { command: 'git rebase -i HEAD~3', desc: '최근 3개 커밋 대화형 리베이스' }
+            { command: 'git rebase main', desc: '현재 브랜치를 main 위로 재배치' }
           ],
-          practice: 'merge-rebase',
-          quiz: {
-            question: 'Rebase의 특징이 아닌 것은?',
-            options: ['직선 히스토리 생성', '기존 커밋 ID 변경', '머지 커밋 생성', '커밋 재배치'],
-            correct: 2
-          }
+          practice: 'merge'
         }
       },
       {
@@ -703,24 +609,13 @@ feature        ●─●─●
           concepts: [
             {
               title: 'Cherry Pick이란?',
-              text: '다른 브랜치에서 특정 커밋만 선택해서 현재 브랜치로 가져오는 기능입니다. 전체 브랜치를 병합하지 않고 필요한 변경사항만 적용할 때 유용합니다.'
-            },
-            {
-              title: '사용 시나리오',
-              text: '• 버그 수정 커밋만 급하게 가져오기\n• 실험적 기능 중 일부만 적용\n• 잘못된 브랜치에 커밋한 내용 옮기기'
+              text: '다른 브랜치에서 특정 커밋만 선택해서 현재 브랜치로 가져오는 기능입니다.'
             }
           ],
           commands: [
-            { command: 'git cherry-pick commit-hash', desc: '특정 커밋을 현재 브랜치로 가져오기' },
-            { command: 'git cherry-pick A..B', desc: 'A부터 B까지의 커밋들 가져오기' },
-            { command: 'git cherry-pick --no-commit hash', desc: '커밋하지 않고 변경사항만 가져오기' }
+            { command: 'git cherry-pick commit-hash', desc: '특정 커밋을 현재 브랜치로 가져오기' }
           ],
-          practice: 'cherrypick',
-          quiz: {
-            question: 'Cherry pick을 사용하는 이유는?',
-            options: ['전체 브랜치 삭제', '특정 커밋만 선별적으로 가져오기', '브랜치 이름 변경', '커밋 메시지 수정'],
-            correct: 1
-          }
+          practice: 'cherrypick'
         }
       },
       {
@@ -732,26 +627,14 @@ feature        ●─●─●
           concepts: [
             {
               title: 'Stash의 용도',
-              text: '아직 커밋하기엔 이르지만 다른 작업을 해야 할 때, 현재 작업 중인 변경사항을 임시로 저장해둘 수 있습니다. 나중에 언제든 복원 가능합니다.'
-            },
-            {
-              title: '주의사항',
-              text: 'Stash는 임시 저장소입니다. 너무 오래 두면 무엇을 저장했는지 잊어버릴 수 있으니 적절한 이름을 붙이고 정기적으로 정리해야 합니다.'
+              text: '아직 커밋하기엔 이르지만 다른 작업을 해야 할 때, 현재 작업 중인 변경사항을 임시로 저장해둘 수 있습니다.'
             }
           ],
           commands: [
             { command: 'git stash', desc: '현재 변경사항을 스태시에 저장' },
-            { command: 'git stash push -m "작업 설명"', desc: '메시지와 함께 스태시 저장' },
-            { command: 'git stash list', desc: '스태시 목록 확인' },
-            { command: 'git stash apply stash@{0}', desc: '특정 스태시 적용' },
-            { command: 'git stash drop stash@{0}', desc: '특정 스태시 삭제' }
+            { command: 'git stash pop', desc: '저장된 변경사항 복원' }
           ],
-          practice: 'stash',
-          quiz: {
-            question: 'git stash의 주요 목적은?',
-            options: ['영구적 백업', '임시 변경사항 저장', '브랜치 생성', '커밋 삭제'],
-            correct: 1
-          }
+          practice: 'stash'
         }
       },
       {
@@ -763,24 +646,14 @@ feature        ●─●─●
           concepts: [
             {
               title: 'Reset의 세 가지 모드',
-              text: '--soft: HEAD만 이동, 스테이징과 작업 디렉토리는 그대로\n--mixed: HEAD와 스테이징 초기화, 작업 디렉토리는 그대로\n--hard: 모든 영역 초기화, 변경사항 완전 삭제'
-            },
-            {
-              title: '⚠️ 주의사항',
-              text: 'Reset은 되돌릴 수 없습니다! 특히 --hard 옵션은 작업 중인 모든 변경사항을 삭제하므로 매우 조심해야 합니다.'
+              text: '--soft: HEAD만 이동\n--mixed: HEAD와 스테이징 초기화\n--hard: 모든 영역 초기화'
             }
           ],
           commands: [
             { command: 'git reset --soft HEAD~1', desc: '마지막 커밋 취소, 변경사항은 스테이징에 유지' },
-            { command: 'git reset --mixed HEAD~1', desc: '마지막 커밋 취소, 변경사항은 작업 디렉토리에 유지' },
             { command: 'git reset --hard HEAD~1', desc: '마지막 커밋과 모든 변경사항 완전 삭제' }
           ],
-          practice: 'reset',
-          quiz: {
-            question: '--hard 옵션의 위험성은?',
-            options: ['느린 속도', '네트워크 필요', '모든 변경사항 삭제', '권한 필요'],
-            correct: 2
-          }
+          practice: 'reset'
         }
       }
     ];
@@ -815,28 +688,37 @@ feature        ●─●─●
     }
 
     function renderLessons() {
-      const container = document.getElementById('lesson-selector');
+      const container = document.getElementById('lesson-grid');
       container.innerHTML = '';
       
       lessons.forEach((lesson, index) => {
         const isCompleted = currentProgress[lesson.id];
-        const isCurrent = !isCompleted && (index === 0 || currentProgress[lessons[index - 1].id]);
+        const isCurrent = !isCompleted && (index === 0 || currentProgress[lessons[index - 1]?.id]);
+        const isLocked = !isCompleted && !isCurrent;
         
         const card = document.createElement('div');
         card.className = `lesson-card ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}`;
         
-        const progressPercent = isCompleted ? 100 : (isCurrent ? 50 : 0);
+        let statusHtml = '';
+        if (isCompleted) {
+          statusHtml = '<div class="lesson-status status-completed">✅ 완료</div>';
+        } else if (isCurrent) {
+          statusHtml = '<div class="lesson-status status-current">📖 진행 중</div>';
+        } else {
+          statusHtml = '<div class="lesson-status status-locked">🔒 잠김</div>';
+        }
         
         card.innerHTML = `
           <div class="lesson-icon">${lesson.icon}</div>
           <div class="lesson-title">${lesson.title}</div>
           <div class="lesson-desc">${lesson.desc}</div>
-          <div class="lesson-progress">
-            <div class="lesson-progress-fill" style="width: ${progressPercent}%"></div>
-          </div>
+          ${statusHtml}
         `;
         
-        card.addEventListener('click', () => openLesson(lesson));
+        if (!isLocked) {
+          card.addEventListener('click', () => openLesson(lesson));
+        }
+        
         container.appendChild(card);
       });
     }
@@ -862,14 +744,7 @@ feature        ●─●─●
       }
       
       if (lesson.content.commands) {
-        html += `
-          <div class="command-demo">
-            <div class="command-line">
-              <span class="command-prompt">$</span>
-              <span style="color: #7d8590;"> # ${lesson.title} 명령어들</span>
-            </div>
-        `;
-        
+        html += `<div class="command-demo">`;
         lesson.content.commands.forEach(cmd => {
           html += `
             <div class="command-line">
@@ -879,17 +754,7 @@ feature        ●─●─●
             <div class="command-output"># ${cmd.desc}</div>
           `;
         });
-        
         html += '</div>';
-      }
-      
-      if (lesson.content.diagram) {
-        html += `
-          <div class="visual-diagram">
-            <div style="margin-bottom: 1rem; font-weight: 800; color: #58a6ff;">브랜치 구조</div>
-            <pre style="font-family: 'JetBrains Mono', monospace;">${lesson.content.diagram}</pre>
-          </div>
-        `;
       }
       
       if (lesson.content.practice) {
@@ -919,10 +784,7 @@ feature        ●─●─●
           `;
         });
         
-        html += `
-            </div>
-          </div>
-        `;
+        html += '</div></div>';
       }
       
       html += `
@@ -977,11 +839,6 @@ feature        ●─●─●
 
     document.addEventListener('DOMContentLoaded', () => {
       createLearningParticles();
-      
-      if (window.ghcMountHUD) {
-        window.ghcMountHUD({ showHome: true });
-      }
-      
       updateProgressDisplay();
       renderLessons();
       
