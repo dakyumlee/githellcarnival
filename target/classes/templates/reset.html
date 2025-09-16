@@ -4,187 +4,48 @@
   <meta charset="UTF-8">
   <title>🔥 Reset 시뮬레이터</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/arcade.css">
+  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
-      color: #f0f6fc;
-      font-family: 'JetBrains Mono', 'Pretendard', monospace;
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: #111;
+      color: #fff;
+      font-family: Pretendard, sans-serif;
+      margin: 0;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 30% 70%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 30%, rgba(255, 99, 71, 0.08) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: -2;
-    }
-
-    .neon {
-      text-shadow: 
-        0 0 5px currentColor,
-        0 0 10px currentColor,
-        0 0 15px currentColor,
-        0 0 20px #ff4500;
-      animation: danger-flicker 1.5s infinite alternate;
-    }
-
-    @keyframes danger-flicker {
-      0%, 18%, 22%, 25%, 53%, 57%, 100% {
-        opacity: 1;
-        filter: brightness(1);
-      }
-      20%, 24%, 55% {
-        opacity: 0.8;
-        filter: brightness(0.85);
-      }
-    }
-
-    .hud {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 20px;
-      background: rgba(13, 17, 23, 0.95);
-      backdrop-filter: blur(15px);
-      border-bottom: 1px solid #30363d;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .hud-left {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .logo {
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: #00ff41;
-      font-size: 1.2rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      background: rgba(33, 38, 45, 0.9);
-      border: 1px solid #30363d;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 700;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-    }
-
-    .hud-home {
-      background: linear-gradient(145deg, #21262d, #404040);
-      border: 1px solid #30363d;
-      color: #f0f6fc;
-      border-radius: 12px;
-      padding: 10px 16px;
-      transition: all 0.3s ease;
-      font-weight: 600;
-    }
-
-    .hud-home:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .hud-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .achv {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      background: rgba(33, 38, 45, 0.9);
-      border: 1px dashed #30363d;
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      backdrop-filter: blur(10px);
-    }
-
-    .title-section {
-      text-align: center;
-      padding: 3rem 2rem;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .main-title {
-      font-size: clamp(2.5rem, 8vw, 4rem);
-      font-weight: 900;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(45deg, #ff4500, #ff6347, #ff8c00, #ffa500);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: fire-gradient 3s ease-in-out infinite;
-    }
-
-    @keyframes fire-gradient {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    .subtitle {
-      color: #7d8590;
-      font-size: 1.2rem;
-      font-family: 'Pretendard', sans-serif;
-    }
-
-    .game-container {
-      max-width: 1200px;
+    .main-content {
+      max-width: 980px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 20px;
     }
 
-    .danger-board {
+    h1 {
+      margin: 0 0 6px;
+      font-size: 2.5rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    .sub {
+      color: #bbb;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .status-board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      margin: 2rem 0;
-      padding: 2rem;
-      background: rgba(139, 0, 0, 0.1);
-      border: 2px solid #8b0000;
-      border-radius: 20px;
-      backdrop-filter: blur(5px);
-      box-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
+      gap: 20px;
+      margin: 30px 0;
     }
 
     .status-card {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
-      border: 2px solid #404040;
+      background: #1e1e1e;
+      border: 1px solid #333;
       border-radius: 15px;
-      padding: 1.5rem;
+      padding: 25px;
       text-align: center;
-      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
@@ -192,704 +53,359 @@
     .status-card::before {
       content: '';
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transform: translateX(-100%) translateY(-100%) rotate(45deg);
-      transition: transform 0.6s;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #6ea8ff;
     }
 
-    .status-card:hover::before {
-      transform: translateX(100%) translateY(100%) rotate(45deg);
-    }
-
-    .status-card:hover {
-      transform: translateY(-5px);
-      border-color: #ff6347;
-      box-shadow: 0 15px 35px rgba(255, 99, 71, 0.3);
-    }
-
-    .card-title {
+    .status-title {
       font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
-      color: #f0f6fc;
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #ddd;
     }
 
-    .kpi {
-      font-size: 3rem;
+    .status-value {
+      font-size: 48px;
       font-weight: 900;
-      margin: 1rem 0;
-      text-shadow: 0 0 15px currentColor;
+      margin: 15px 0;
+      color: #6ea8ff;
     }
 
-    .kpi.ahead { color: #58a6ff; }
-    .kpi.staged { color: #f9ca24; }
-    .kpi.working { color: #ff6b6b; }
-
-    .card-desc {
-      font-size: 0.9rem;
-      color: #7d8590;
-      font-family: 'Pretendard', sans-serif;
+    .status-desc {
+      font-size: 13px;
+      color: #999;
+      line-height: 1.4;
     }
 
     .mode-selector {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      margin: 2rem 0;
+      gap: 15px;
+      margin: 30px 0;
     }
 
     .mode-card {
-      background: linear-gradient(145deg, #232323, #343434);
-      border: 2px solid #404040;
-      border-radius: 15px;
-      padding: 1.5rem;
+      background: #1b1b1b;
+      border: 2px solid #2b2b2b;
+      border-radius: 12px;
+      padding: 20px;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      text-align: center;
+      transition: all 0.3s ease;
       position: relative;
-      overflow: hidden;
-    }
-
-    .mode-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-      transform: translateX(-100%);
-      transition: transform 0.6s;
-    }
-
-    .mode-card:hover::after {
-      transform: translateX(100%);
     }
 
     .mode-card:hover {
-      transform: translateY(-10px) scale(1.05);
+      transform: translateY(-5px);
+      border-color: #444;
     }
 
     .mode-card.active {
-      border-color: #ff4500;
-      background: linear-gradient(145deg, #2a1a0f, #3d2818);
-      box-shadow: 0 0 30px rgba(255, 69, 0, 0.4);
+      border-color: #6ea8ff;
+      background: #21293a;
+    }
+
+    .mode-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
     }
 
     .mode-name {
-      font-weight: 800;
-      font-size: 1.4rem;
-      margin-bottom: 0.8rem;
-      color: #f0f6fc;
-    }
-
-    .mode-card.active .mode-name {
-      color: #ff6347;
-      text-shadow: 0 0 10px #ff6347;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 18px;
     }
 
     .mode-desc {
-      margin-bottom: 1rem;
-      color: #7d8590;
-      font-family: 'Pretendard', sans-serif;
+      font-size: 14px;
+      color: #bbb;
+      line-height: 1.4;
+      margin-bottom: 10px;
     }
 
     .mode-hint {
-      color: #58a6ff;
-      font-size: 0.9rem;
-      font-family: 'JetBrains Mono', monospace;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 0.5rem;
-      border-radius: 8px;
+      color: #777;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      background: #0f0f0f;
+      padding: 5px 8px;
+      border-radius: 4px;
+      margin-top: 8px;
     }
 
-    .control-panel {
+    .action-bar {
       display: flex;
-      gap: 1rem;
-      justify-content: center;
+      gap: 15px;
       align-items: center;
-      margin: 2rem 0;
-      padding: 2rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
+      margin: 30px 0;
+      justify-content: center;
     }
 
     .btn {
       padding: 15px 30px;
-      font-size: 1.1rem;
-      font-weight: 800;
+      font-size: 16px;
+      font-weight: 600;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-family: 'JetBrains Mono', monospace;
-      position: relative;
-      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: #c0392b;
     }
 
     .btn-secondary {
-      background: linear-gradient(145deg, #333, #555);
-      color: #f0f6fc;
-      border: 2px solid #666;
+      background: #333;
+      color: #fff;
+      border: 1px solid #555;
     }
 
     .btn-secondary:hover {
-      background: linear-gradient(145deg, #555, #333);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .btn-danger {
-      background: linear-gradient(145deg, #e74c3c, #c0392b);
-      color: #fff;
-      border: 2px solid #a93226;
-      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-    }
-
-    .btn-danger::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-danger:hover::before {
-      left: 100%;
-    }
-
-    .btn-danger:hover {
-      background: linear-gradient(145deg, #c0392b, #a93226);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(231, 76, 60, 0.6);
+      background: #444;
+      transform: translateY(-1px);
     }
 
     .result-area {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-      margin-top: 2rem;
+      gap: 20px;
+      margin: 30px 0;
     }
 
-    .terminal {
-      background: #000;
-      border: 3px solid #333;
-      border-radius: 15px;
-      padding: 2rem;
-      font-family: 'JetBrains Mono', monospace;
-      position: relative;
-      overflow: hidden;
+    .result-panel {
+      background: #181818;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 25px;
     }
 
-    .terminal::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 255, 0, 0.03) 2px,
-          rgba(0, 255, 0, 0.03) 4px
-        );
-      pointer-events: none;
+    .panel-title {
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #ddd;
     }
 
-    .terminal-header {
-      color: #00ff41;
-      font-weight: bold;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #333;
-      padding-bottom: 0.5rem;
+    .result-log {
+      min-height: 60px;
+      font-size: 18px;
+      line-height: 1.5;
+      margin-bottom: 15px;
     }
 
-    .terminal-content {
-      color: #f0f6fc;
-      line-height: 1.6;
-      position: relative;
-      z-index: 1;
-    }
-
-    .log-message {
-      font-size: 1.2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .log-hint {
-      color: #7d8590;
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      font-style: italic;
+    .result-hint {
+      font-size: 14px;
+      color: #bbb;
+      font-family: 'Courier New', monospace;
+      background: #0f0f0f;
+      padding: 10px;
+      border-radius: 6px;
+      border-left: 3px solid #6ea8ff;
     }
 
     .avatar-panel {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
-      border: 2px solid #404040;
-      border-radius: 15px;
-      padding: 2rem;
       text-align: center;
     }
 
     .avatar {
-      font-size: 5rem;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 0 20px currentColor);
-    }
-
-    .avatar.success { color: #00ff41; }
-    .avatar.error { color: #ff6b6b; }
-    .avatar.neutral { color: #7d8590; }
-
-    .status-text {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
+      font-size: 80px;
+      margin: 20px 0;
+      transition: all 0.3s ease;
     }
 
     .score-display {
-      font-size: 1.5rem;
-      font-weight: 800;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
-      margin-top: 1rem;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #222;
     }
 
-    .score-positive { color: #00ff41; }
-    .score-negative { color: #ff6b6b; }
+    .score-positive { color: #2ecc71; }
+    .score-negative { color: #e74c3c; }
+    .score-neutral { color: #bbb; }
 
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: -1;
-    }
-
-    .particle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: #ff6347;
-      border-radius: 50%;
-      animation: particle-float 8s infinite linear;
-    }
-
-    @keyframes particle-float {
-      0% {
-        transform: translateY(100vh) translateX(0) scale(0);
-        opacity: 0;
-      }
-      5% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      95% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-10vh) translateX(50px) scale(0);
-        opacity: 0;
-      }
-    }
-
-    @media (max-width: 968px) {
-      .danger-board {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-      }
-      
-      .mode-selector {
+    @media (max-width: 768px) {
+      .status-board, .mode-selector {
         grid-template-columns: 1fr;
       }
-      
       .result-area {
         grid-template-columns: 1fr;
       }
-      
-      .control-panel {
+      .action-bar {
         flex-direction: column;
       }
-      
-      .game-container {
-        padding: 1rem;
-      }
     }
-
-    .warning-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 0, 0, 0.1);
-      pointer-events: none;
-      z-index: 1000;
-      animation: warning-pulse 0.5s ease-in-out;
-    }
-
-    @keyframes warning-pulse {
-      0%, 100% { opacity: 0; }
-      50% { opacity: 1; }
-    }
-
-    .git-visualization {
-      margin: 1rem 0;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-    }
-
-    .commit-line {
-      display: flex;
-      align-items: center;
-      margin: 0.3rem 0;
-      color: #7d8590;
-    }
-
-    .commit-hash { color: #f1e05a; margin-right: 1rem; }
-    .commit-message { color: #f0f6fc; }
-    .commit-danger { color: #ff6b6b; }
-    .commit-safe { color: #00ff41; }
   </style>
 </head>
+<script src="/js/arcade.js"></script>
+<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
-  <div class="particles" id="particles"></div>
+<header class="hud" id="hud"></header>
+
+<div class="main-content">
+  <h1>🔥 Reset 시뮬레이터</h1>
+  <div class="sub">soft / mixed / hard 차이를 몸으로 이해해보기</div>
   
-  <header class="hud" id="hud">
-    <div class="hud-left">
-      <a class="hud-home" href="/">← 로비</a>
-      <div class="logo">GHC</div>
-      <div class="badge">
-        SCORE&nbsp;<span id="hud-score">1337</span>
-      </div>
+  <div class="status-board">
+    <div class="status-card">
+      <div class="status-title">HEAD (앞선 커밋)</div>
+      <div id="kpi-ahead" class="status-value">2</div>
+      <div class="status-desc">브랜치가 원격보다 얼마나 앞서는지</div>
     </div>
-    <div class="hud-right" id="hud-achv">
-      <div class="achv">🏅 Reset 초보</div>
+    <div class="status-card">
+      <div class="status-title">Staging Area</div>
+      <div id="kpi-staged" class="status-value">1</div>
+      <div class="status-desc">git add로 올린 변경사항</div>
     </div>
-  </header>
-
-  <section class="title-section">
-    <h1 class="main-title">🔥 RESET SIMULATOR</h1>
-    <p class="subtitle">soft / mixed / hard 차이를 몸으로 이해하는 시간</p>
-  </section>
-
-  <main class="game-container">
-    <div class="danger-board">
-      <div class="status-card">
-        <div class="card-title">HEAD (앞선 커밋)</div>
-        <div id="kpi-ahead" class="kpi ahead">2</div>
-        <div class="card-desc">브랜치가 원격보다 앞선 커밋 수</div>
-      </div>
-      <div class="status-card">
-        <div class="card-title">Staging Area</div>
-        <div id="kpi-staged" class="kpi staged">1</div>
-        <div class="card-desc">git add로 올린 변경사항</div>
-      </div>
-      <div class="status-card">
-        <div class="card-title">Working Tree</div>
-        <div id="kpi-working" class="kpi working">4</div>
-        <div class="card-desc">파일에 남아있는 수정사항</div>
-      </div>
+    <div class="status-card">
+      <div class="status-title">Working Tree</div>
+      <div id="kpi-working" class="status-value">4</div>
+      <div class="status-desc">파일에 남아있는 수정사항</div>
     </div>
+  </div>
 
-    <div class="git-visualization" id="git-viz">
-      <div class="commit-line">
-        <span class="commit-hash">7fa21c</span>
-        <span class="commit-message">feat: 새로운 기능 추가</span>
-        <span class="commit-safe"> ← HEAD</span>
-      </div>
-      <div class="commit-line">
-        <span class="commit-hash">b9f443</span>
-        <span class="commit-message">fix: 버그 수정</span>
-      </div>
-      <div class="commit-line">
-        <span class="commit-hash">2cf882</span>
-        <span class="commit-message">docs: README 업데이트</span>
-      </div>
+  <div class="mode-selector">
+    <div class="mode-card" data-mode="soft">
+      <div class="mode-icon">🪶</div>
+      <div class="mode-name">--soft</div>
+      <div class="mode-desc">HEAD만 이동하고 변경사항은 스테이징에 보존</div>
+      <div class="mode-hint">reset --soft HEAD~1</div>
     </div>
-
-    <div class="mode-selector">
-      <div class="mode-card" data-mode="soft">
-        <div class="mode-name">--soft</div>
-        <div class="mode-desc">HEAD만 이동<br>변경사항은 스테이징에 보존</div>
-        <div class="mode-hint">git reset --soft HEAD~1</div>
-      </div>
-      <div class="mode-card active" data-mode="mixed">
-        <div class="mode-name">--mixed</div>
-        <div class="mode-desc">HEAD+인덱스 이동<br>변경사항은 작업트리에 보존</div>
-        <div class="mode-hint">git reset --mixed HEAD~1</div>
-      </div>
-      <div class="mode-card" data-mode="hard">
-        <div class="mode-name">--hard</div>
-        <div class="mode-desc">HEAD+인덱스+작업트리 모두 되돌림<br>⚠️ 모든 변경사항 삭제</div>
-        <div class="mode-hint">git reset --hard HEAD~1</div>
-      </div>
+    <div class="mode-card" data-mode="mixed">
+      <div class="mode-icon">🔄</div>
+      <div class="mode-name">--mixed</div>
+      <div class="mode-desc">HEAD와 인덱스를 이동, 변경은 작업트리에 보존</div>
+      <div class="mode-hint">reset --mixed HEAD~1</div>
     </div>
-
-    <div class="control-panel">
-      <button id="btn-shuffle" class="btn btn-secondary">🎲 무대 셔플</button>
-      <button id="btn-execute" class="btn btn-danger">💥 EXECUTE RESET</button>
+    <div class="mode-card" data-mode="hard">
+      <div class="mode-icon">💥</div>
+      <div class="mode-name">--hard</div>
+      <div class="mode-desc">HEAD, 인덱스, 작업트리를 모두 되돌림</div>
+      <div class="mode-hint">reset --hard HEAD~1</div>
     </div>
+  </div>
 
-    <div class="result-area">
-      <div class="terminal">
-        <div class="terminal-header">$ git reset --mixed HEAD~1</div>
-        <div class="terminal-content">
-          <div id="log-message" class="log-message">모드를 선택하고 실행 버튼을 누르세요</div>
-          <div id="log-hint" class="log-hint">Reset은 되돌릴 수 없습니다. 신중하게 선택하세요.</div>
-        </div>
-      </div>
+  <div class="action-bar">
+    <button id="btn-shuffle" class="btn btn-secondary">🎲 무대 셔플</button>
+    <button id="btn-execute" class="btn btn-primary">⚡ 실행</button>
+  </div>
+
+  <div class="result-area">
+    <div class="result-panel">
+      <div class="panel-title">실행 결과</div>
+      <div id="result-log" class="result-log">모드를 선택하고 실행 버튼을 눌러보세요</div>
+      <div id="result-hint" class="result-hint"></div>
+    </div>
+    <div class="result-panel avatar-panel">
+      <div class="panel-title">상태</div>
+      <div id="avatar" class="avatar">🧑‍💻</div>
+      <div id="score-display" class="score-display score-neutral">점수: 대기중</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let ahead = 2;
+  let staged = 1;
+  let working = 4;
+  let selectedMode = "mixed";
+
+  function updateDisplay() {
+    document.getElementById("kpi-ahead").textContent = ahead;
+    document.getElementById("kpi-staged").textContent = staged;
+    document.getElementById("kpi-working").textContent = working;
+  }
+
+  function selectMode(mode) {
+    selectedMode = mode;
+    document.querySelectorAll(".mode-card").forEach(card => {
+      card.classList.remove("active");
+    });
+    document.querySelector(`[data-mode="${mode}"]`).classList.add("active");
+  }
+
+  function shuffleStage() {
+    ahead = Math.floor(Math.random() * 3) + 1;
+    staged = Math.floor(Math.random() * 3);
+    working = Math.floor(Math.random() * 6);
+    updateDisplay();
+    
+    document.getElementById("result-log").textContent = "🎲 무대가 섞였습니다! 새로운 상황에 도전해보세요";
+    document.getElementById("result-hint").textContent = "";
+    document.getElementById("avatar").textContent = "🧑‍💻";
+    
+    const scoreDisplay = document.getElementById("score-display");
+    scoreDisplay.textContent = "점수: 대기중";
+    scoreDisplay.className = "score-display score-neutral";
+  }
+
+  function executeReset() {
+    const executeBtn = document.getElementById("btn-execute");
+    executeBtn.disabled = true;
+    executeBtn.textContent = "⏳ 실행중...";
+    
+    fetch("/api/reset/execute", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        mode: selectedMode,
+        aheadCommits: ahead,
+        stagedChanges: staged,
+        workingChanges: working
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      ahead = data.aheadCommits;
+      staged = data.stagedChanges;
+      working = data.workingChanges;
+      updateDisplay();
       
-      <div class="avatar-panel">
-        <div class="status-text">시스템 상태</div>
-        <div id="avatar" class="avatar neutral">🧑‍💻</div>
-        <div id="status-message">대기 중...</div>
-        <div id="score-display" class="score-display">
-          점수: <span id="score-change">+0</span>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <script src="/js/arcade.js"></script>
-  <script>
-    let ahead = 2;
-    let staged = 1;
-    let working = 4;
-    let selected = "mixed";
-
-    function createFireParticles() {
-      const particles = document.getElementById('particles');
-      particles.innerHTML = '';
+      document.getElementById("result-log").textContent = data.message;
+      document.getElementById("result-hint").textContent = data.stateHint || data.hint;
+      document.getElementById("avatar").textContent = data.success ? "😎" : "😡";
       
-      const colors = ['#ff4500', '#ff6347', '#ff8c00', '#ffa500', '#ff0000'];
+      const scoreDisplay = document.getElementById("score-display");
+      const scoreDiff = data.scoreDiff || 0;
+      scoreDisplay.textContent = `점수: ${scoreDiff > 0 ? '+' : ''}${scoreDiff}`;
+      scoreDisplay.className = `score-display ${scoreDiff > 0 ? 'score-positive' : scoreDiff < 0 ? 'score-negative' : 'score-neutral'}`;
       
-      for (let i = 0; i < 40; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 8 + 's';
-        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-        
-        particles.appendChild(particle);
+      if (scoreDiff !== 0) {
+        ghcAddScore(scoreDiff);
       }
-    }
-
-    function updateKPI() {
-      document.getElementById("kpi-ahead").textContent = ahead;
-      document.getElementById("kpi-staged").textContent = staged;
-      document.getElementById("kpi-working").textContent = working;
-      updateGitVisualization();
-    }
-
-    function updateGitVisualization() {
-      const viz = document.getElementById("git-viz");
-      let html = '';
-      
-      for (let i = 0; i < Math.max(1, ahead); i++) {
-        const isHead = i === 0;
-        const hash = ['7fa21c', 'b9f443', '2cf882', 'a1b2c3', 'd4e5f6'][i] || 'abc123';
-        const messages = [
-          'feat: 새로운 기능 추가',
-          'fix: 버그 수정',
-          'docs: README 업데이트', 
-          'refactor: 코드 정리',
-          'test: 테스트 추가'
-        ];
-        
-        html += `
-          <div class="commit-line">
-            <span class="commit-hash">${hash}</span>
-            <span class="commit-message">${messages[i] || '커밋 메시지'}</span>
-            ${isHead ? '<span class="commit-safe"> ← HEAD</span>' : ''}
-          </div>
-        `;
-      }
-      
-      viz.innerHTML = html;
-    }
-
-    function selectMode(mode) {
-      selected = mode;
-      document.querySelectorAll('.mode-card').forEach(card => {
-        card.classList.remove('active');
-      });
-      document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
-      
-      const hints = {
-        soft: 'git reset --soft HEAD~1',
-        mixed: 'git reset --mixed HEAD~1',
-        hard: 'git reset --hard HEAD~1'
-      };
-      
-      document.querySelector('.terminal-header').textContent = `$ ${hints[mode]}`;
-    }
-
-    function shuffle() {
-      ahead = Math.floor(Math.random() * 4) + 1;
-      staged = Math.floor(Math.random() * 5);
-      working = Math.floor(Math.random() * 8);
-      
-      updateKPI();
-      showMessage("🎲 새로운 상황이 생성되었습니다!", "무대가 섞였습니다. 모드를 선택해주세요.", "neutral");
-      
-      if (window.ghcUnlock) {
-        window.ghcUnlock('shuffler', '상황 조작자', 'good');
-      }
-    }
-
-    function showMessage(message, hint, type) {
-      document.getElementById("log-message").textContent = message;
-      document.getElementById("log-hint").textContent = hint;
-      
-      const avatar = document.getElementById("avatar");
-      const statusMessage = document.getElementById("status-message");
-      
-      avatar.className = `avatar ${type}`;
-      
-      switch(type) {
-        case 'success':
-          avatar.textContent = "😎";
-          statusMessage.textContent = "성공!";
-          break;
-        case 'error':
-          avatar.textContent = "😱";
-          statusMessage.textContent = "위험!";
-          break;
-        default:
-          avatar.textContent = "🧑‍💻";
-          statusMessage.textContent = "대기 중...";
-      }
-    }
-
-    function showWarning() {
-      const overlay = document.createElement('div');
-      overlay.className = 'warning-overlay';
-      document.body.appendChild(overlay);
       
       setTimeout(() => {
-        overlay.remove();
-      }, 500);
-    }
-
-    function executeReset() {
-      const button = document.getElementById('btn-execute');
-      button.style.transform = 'scale(0.95)';
-      
-      setTimeout(() => {
-        button.style.transform = '';
-      }, 100);
-
-      if (selected === 'hard' && (ahead > 0 || staged > 0 || working > 0)) {
-        showWarning();
-      }
-
-      fetch("/api/reset/execute", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          mode: selected,
-          aheadCommits: ahead,
-          stagedChanges: staged,
-          workingChanges: working
-        })
-      })
-      .then(r => r.json())
-      .then(data => {
-        ahead = data.aheadCommits;
-        staged = data.stagedChanges;
-        working = data.workingChanges;
-        
-        updateKPI();
-        
-        const scoreChange = data.scoreDiff || 0;
-        const scoreDisplay = document.getElementById("score-change");
-        scoreDisplay.textContent = scoreChange > 0 ? `+${scoreChange}` : `${scoreChange}`;
-        scoreDisplay.className = scoreChange >= 0 ? 'score-positive' : 'score-negative';
-        
-        if (window.ghcAddScore) {
-          window.ghcAddScore(scoreChange);
-        }
-        
-        const type = data.success ? 'success' : 'error';
-        showMessage(data.message, data.hint, type);
-        
-        if (window.ghcUnlock) {
-          if (selected === 'hard' && data.success) {
-            window.ghcUnlock('destroyer', '파괴자', 'bad');
-          } else if (selected === 'soft' && data.success) {
-            window.ghcUnlock('careful', '신중한 개발자', 'good');
-          }
-        }
-        
-        if (scoreChange <= -50) {
-          if (window.ghcUnlock) {
-            window.ghcUnlock('disaster', '재앙의 주인공', 'bad');
-          }
-        }
-      })
-      .catch(error => {
-        showMessage("💥 시스템 오류 발생!", "서버와의 연결에 문제가 있습니다.", "error");
-      });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      createFireParticles();
-      updateKPI();
-      
-      if (window.ghcMountHUD) {
-        window.ghcMountHUD({ showHome: true });
-      }
-      
-      document.querySelectorAll('.mode-card').forEach(card => {
-        card.addEventListener('click', () => {
-          selectMode(card.getAttribute('data-mode'));
-        });
-      });
-      
-      document.getElementById('btn-shuffle').addEventListener('click', shuffle);
-      document.getElementById('btn-execute').addEventListener('click', executeReset);
-      
-      selectMode('mixed');
-      
-      if (localStorage.getItem('ghcResetVisited') !== '1') {
-        localStorage.setItem('ghcResetVisited', '1');
-        if (window.ghcUnlock) {
-          window.ghcUnlock('reset-beginner', 'Reset 입문', 'good');
-        }
-      }
+        executeBtn.disabled = false;
+        executeBtn.textContent = "⚡ 실행";
+      }, 1000);
+    })
+    .catch(() => {
+      executeBtn.disabled = false;
+      executeBtn.textContent = "⚡ 실행";
     });
+  }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        executeReset();
-      } else if (e.key >= '1' && e.key <= '3') {
-        const modes = ['soft', 'mixed', 'hard'];
-        selectMode(modes[parseInt(e.key) - 1]);
-      }
+  document.querySelectorAll(".mode-card").forEach(card => {
+    card.addEventListener("click", () => {
+      selectMode(card.dataset.mode);
     });
-  </script>
+  });
+
+  document.getElementById("btn-shuffle").addEventListener("click", shuffleStage);
+  document.getElementById("btn-execute").addEventListener("click", executeReset);
+
+  selectMode("mixed");
+  updateDisplay();
+</script>
 </body>
 </html>

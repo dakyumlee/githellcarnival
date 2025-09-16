@@ -4,768 +4,462 @@
   <meta charset="UTF-8">
   <title>🌊 Revert 쓰나미</title>
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/arcade.css">
-  
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
+    
     body {
-      background: #0d1117;
-      color: #f0f6fc;
-      font-family: 'JetBrains Mono', 'Pretendard', monospace;
+      background: #0f1419 !important;
+      color: #e6f1ff !important;
+      font-family: 'Pretendard', sans-serif !important;
       min-height: 100vh;
-      overflow: hidden;
     }
-
-    .hud {
-      position: fixed;
+    
+    .custom-hud {
+      position: sticky;
       top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
+      z-index: 50;
       display: flex;
       gap: 16px;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 20px;
-      background: rgba(13, 17, 23, 0.95);
-      backdrop-filter: blur(15px);
-      border-bottom: 1px solid #30363d;
+      padding: 12px 16px;
+      background: rgba(15, 20, 25, 0.95) !important;
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid #2563eb;
     }
-
-    .hud-left {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .logo {
+    
+    .custom-logo {
       font-weight: 900;
-      letter-spacing: 1px;
-      color: #00ff41;
+      color: #3b82f6 !important;
       font-size: 1.2rem;
     }
-
-    .score-display {
-      background: rgba(33, 38, 45, 0.9);
-      border: 1px solid #30363d;
-      padding: 8px 12px;
+    
+    .custom-home {
+      background: #1e293b !important;
+      border: 1px solid #2563eb !important;
+      color: #e6f1ff !important;
       border-radius: 10px;
-      font-weight: 700;
-    }
-
-    .hud-home {
-      background: #21262d;
-      border: 1px solid #30363d;
-      color: #f0f6fc;
-      border-radius: 12px;
       padding: 8px 12px;
-      transition: all 0.3s ease;
-      font-weight: 600;
       text-decoration: none;
-      font-size: 0.9rem;
+      transition: all 0.3s ease;
     }
-
-    .hud-home:hover {
-      background: #404040;
+    
+    .custom-home:hover {
+      background: #334155 !important;
       transform: translateY(-2px);
     }
-
+    
+    .game-container {
+      text-align: center;
+      padding: 2rem;
+      background: #0f1419 !important;
+      color: #e6f1ff !important;
+      min-height: calc(100vh - 80px);
+    }
+    
+    .game-title {
+      font-size: 3rem !important;
+      color: #3b82f6 !important;
+      margin-bottom: 1rem !important;
+      font-weight: 900 !important;
+    }
+    
+    .game-subtitle {
+      font-size: 1.2rem !important;
+      color: #94a3b8 !important;
+      margin-bottom: 2rem !important;
+    }
+    
     .game-area {
-      position: fixed;
-      top: 80px;
-      left: 0;
-      width: 100%;
-      height: calc(100vh - 80px);
-      background: #1a202c;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      height: 400px;
+      background: #1e293b !important;
+      border-radius: 10px;
       overflow: hidden;
+      border: 2px solid #334155;
     }
-
-    .tsunami-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .commit-log {
-      position: absolute;
-      width: 100%;
-      font-size: 0.9rem;
-      padding: 8px 16px;
-      background: rgba(45, 55, 72, 0.9);
-      border: 1px solid #4a5568;
-      border-radius: 4px;
-      backdrop-filter: blur(5px);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      user-select: none;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .commit-log:hover {
-      background: rgba(56, 68, 89, 0.9);
-      transform: scale(1.02);
-    }
-
-    .commit-log.good {
-      border-color: #00ff41;
-      background: rgba(0, 255, 65, 0.1);
-    }
-
-    .commit-log.bad {
-      border-color: #ff6b6b;
-      background: rgba(255, 107, 107, 0.1);
-    }
-
-    .commit-log.clicked {
-      transform: scale(0.8);
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    .commit-hash {
-      color: #ffa500;
-      font-weight: 700;
-    }
-
-    .commit-message {
-      margin-left: 8px;
-      color: #f0f6fc;
-    }
-
-    .commit-author {
-      color: #7d8590;
-      font-size: 0.8rem;
-      margin-left: 8px;
-    }
-
+    
     .player {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 3rem;
-      transition: left 0.1s ease;
-      z-index: 50;
-      filter: drop-shadow(0 0 10px #00ff41);
+      position: absolute !important;
+      bottom: 20px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      font-size: 3rem !important;
+      z-index: 20 !important;
     }
-
-    .game-controls {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+    
+    .stats-grid {
+      margin: 2rem 0;
       display: flex;
-      gap: 1rem;
-      z-index: 100;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
     }
-
-    .control-btn {
-      background: rgba(33, 38, 45, 0.9);
-      border: 1px solid #30363d;
-      color: #f0f6fc;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-    }
-
-    .control-btn:hover {
-      background: rgba(64, 64, 64, 0.9);
-      transform: translateY(-2px);
-    }
-
-    .control-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .game-info {
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      background: rgba(13, 17, 23, 0.95);
-      border: 1px solid #30363d;
+    
+    .stat-card {
+      background: #1e293b !important;
+      padding: 1rem;
       border-radius: 10px;
-      padding: 16px;
-      backdrop-filter: blur(10px);
-      min-width: 200px;
+      min-width: 120px;
+      border: 1px solid #334155;
     }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
+    
+    .stat-label {
+      font-weight: bold !important;
+      color: #94a3b8 !important;
+      margin-bottom: 0.5rem;
     }
-
-    .wave-indicator {
-      position: fixed;
-      top: 50%;
-      left: 20px;
-      transform: translateY(-50%);
-      background: rgba(13, 17, 23, 0.95);
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 16px;
-      backdrop-filter: blur(10px);
-      text-align: center;
+    
+    .stat-value {
+      font-size: 1.5rem !important;
+      color: #3b82f6 !important;
+      font-weight: 700 !important;
     }
-
-    .wave-number {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #58a6ff;
-      margin-bottom: 8px;
+    
+    .game-buttons {
+      margin: 2rem 0;
     }
-
-    .instructions {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(13, 17, 23, 0.98);
-      border: 2px solid #30363d;
-      border-radius: 15px;
-      padding: 2rem;
-      text-align: center;
-      backdrop-filter: blur(15px);
-      z-index: 200;
+    
+    .btn-primary {
+      background: #3b82f6 !important;
+      color: white !important;
+      border: none !important;
+      padding: 1rem 2rem !important;
+      font-size: 1.1rem !important;
+      border-radius: 10px !important;
+      cursor: pointer !important;
+      margin-right: 1rem !important;
+      transition: all 0.3s ease !important;
+      font-weight: 600 !important;
     }
-
-    .instructions h2 {
-      color: #58a6ff;
-      margin-bottom: 1rem;
-      font-size: 1.5rem;
+    
+    .btn-primary:hover {
+      background: #1d4ed8 !important;
+      transform: translateY(-2px) !important;
     }
-
-    .instructions p {
-      margin-bottom: 1rem;
-      line-height: 1.6;
-      font-family: 'Pretendard', sans-serif;
+    
+    .btn-secondary {
+      background: #334155 !important;
+      color: white !important;
+      border: none !important;
+      padding: 1rem 2rem !important;
+      font-size: 1.1rem !important;
+      border-radius: 10px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      font-weight: 600 !important;
     }
-
-    .instructions .controls {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin: 1rem 0;
+    
+    .btn-secondary:hover {
+      background: #475569 !important;
     }
-
-    .control-item {
-      background: rgba(45, 55, 72, 0.5);
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+    
+    .btn-secondary:disabled {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
     }
-
-    .start-btn {
-      background: #58a6ff;
-      border: none;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
+    
+    .game-message {
       margin-top: 1rem;
-      transition: all 0.3s ease;
+      font-size: 1.1rem !important;
+      min-height: 1.5rem;
+      font-weight: 600 !important;
     }
-
-    .start-btn:hover {
-      background: #4a90e2;
-      transform: translateY(-2px);
+    
+    .game-instructions {
+      margin-top: 2rem;
+      color: #94a3b8 !important;
     }
-
-    .game-over {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(13, 17, 23, 0.98);
-      border: 2px solid #ff6b6b;
-      border-radius: 15px;
-      padding: 2rem;
-      text-align: center;
-      backdrop-filter: blur(15px);
-      z-index: 200;
-      display: none;
+    
+    .commit-item {
+      position: absolute !important;
+      padding: 8px 12px !important;
+      border-radius: 5px !important;
+      cursor: pointer !important;
+      font-size: 0.9rem !important;
+      font-weight: bold !important;
+      transition: all 0.2s !important;
+      z-index: 10 !important;
+      color: black !important;
     }
-
-    .game-over.success {
-      border-color: #00ff41;
+    
+    .commit-good {
+      background: #00ff41 !important;
     }
-
-    .game-over h2 {
-      margin-bottom: 1rem;
-      font-size: 2rem;
-    }
-
-    .final-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-
-    .stat-item {
-      background: rgba(45, 55, 72, 0.5);
-      padding: 12px;
-      border-radius: 8px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #30363d;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #58a6ff;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    @media (max-width: 768px) {
-      .game-info, .wave-indicator {
-        position: static;
-        margin: 10px;
-      }
-      
-      .instructions, .game-over {
-        margin: 20px;
-        width: calc(100% - 40px);
-      }
-      
-      .controls {
-        grid-template-columns: 1fr;
-      }
+    
+    .commit-bad {
+      background: #ff6b6b !important;
     }
   </style>
 </head>
 <script src="/js/arcade.js"></script>
-<script>window.ghcMountHUD({ showHome:true });</script>
+<script>
+if(window.ghcMountHUD) {
+  window.ghcMountHUD({ showHome:true });
+}
+</script>
 <body>
-  <header class="hud" id="hud">
-    <div class="hud-left">
-      <a class="hud-home" href="/">← 로비</a>
-      <div class="logo">GHC</div>
-      <div class="score-display">점수: <span id="current-score">0</span></div>
+  <header class="custom-hud">
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <a class="custom-home" href="/">← 로비</a>
+      <div class="custom-logo">GHC</div>
     </div>
   </header>
-
-  <div class="game-area" id="game-area">
-    <div class="tsunami-container" id="tsunami-container"></div>
-    <div class="player" id="player">🧑‍💻</div>
-  </div>
-
-  <div class="game-info">
-    <div class="info-row">
-      <span>생명:</span>
-      <span id="lives">❤️❤️❤️</span>
-    </div>
-    <div class="info-row">
-      <span>콤보:</span>
-      <span id="combo">0</span>
-    </div>
-    <div class="info-row">
-      <span>속도:</span>
-      <span id="speed">1x</span>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
-  </div>
-
-  <div class="wave-indicator">
-    <div class="wave-number" id="wave-number">1</div>
-    <div>WAVE</div>
-  </div>
-
-  <div class="game-controls">
-    <button class="control-btn" id="pause-btn">⏸️ 일시정지</button>
-    <button class="control-btn" id="restart-btn">🔄 다시시작</button>
-  </div>
-
-  <div class="instructions" id="instructions">
-    <h2>🌊 Revert 쓰나미</h2>
-    <p>커밋 로그가 쓰나미처럼 밀려온다! 나쁜 커밋은 클릭해서 revert하고, 좋은 커밋은 피하세요!</p>
+  
+  <div class="game-container">
+    <h1 class="game-title">🌊 Revert 쓰나미</h1>
+    <p class="game-subtitle">나쁜 커밋을 클릭해서 revert하세요!</p>
     
-    <div class="controls">
-      <div class="control-item">
-        <strong>←→ 화살표</strong><br>
-        좌우 이동
+    <div class="game-area" id="game-area">
+      <div id="commits-container" style="position: relative; width: 100%; height: 100%;"></div>
+      <div class="player" id="player">🧑‍💻</div>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">점수</div>
+        <div class="stat-value" id="score">0</div>
       </div>
-      <div class="control-item">
-        <strong>클릭</strong><br>
-        나쁜 커밋 revert
+      <div class="stat-card">
+        <div class="stat-label">생명</div>
+        <div class="stat-value" id="lives">❤️❤️❤️</div>
       </div>
-      <div class="control-item">
-        <strong>🟢 초록 커밋</strong><br>
-        좋은 커밋 (피하기)
-      </div>
-      <div class="control-item">
-        <strong>🔴 빨간 커밋</strong><br>
-        나쁜 커밋 (클릭)
+      <div class="stat-card">
+        <div class="stat-label">웨이브</div>
+        <div class="stat-value" id="wave">1</div>
       </div>
     </div>
     
-    <p>나쁜 커밋을 놓치거나 좋은 커밋을 실수로 revert하면 생명이 줄어듭니다!</p>
-    
-    <button class="start-btn" onclick="startGame()">🚀 게임 시작</button>
-  </div>
-
-  <div class="game-over" id="game-over">
-    <h2 id="game-over-title"></h2>
-    <div class="final-stats">
-      <div class="stat-item">
-        <div>최종 점수</div>
-        <div id="final-score">0</div>
-      </div>
-      <div class="stat-item">
-        <div>도달 웨이브</div>
-        <div id="final-wave">1</div>
-      </div>
-      <div class="stat-item">
-        <div>성공률</div>
-        <div id="success-rate">0%</div>
-      </div>
-      <div class="stat-item">
-        <div>최고 콤보</div>
-        <div id="max-combo">0</div>
-      </div>
+    <div class="game-buttons">
+      <button class="btn-primary" id="start-btn" onclick="startGame()">게임 시작</button>
+      <button class="btn-secondary" id="pause-btn" onclick="pauseGame()" disabled>일시정지</button>
     </div>
-    <button class="start-btn" onclick="restartGame()">다시 플레이</button>
+    
+    <div class="game-message" id="message"></div>
+    
+    <div class="game-instructions">
+      <p>← → 화살표키로 이동, 나쁜 커밋(빨간색)을 클릭하세요!</p>
+      <p>좋은 커밋(초록색)은 피하세요!</p>
+    </div>
   </div>
-
+  
   <script>
     let gameState = {
       isRunning: false,
       isPaused: false,
       score: 0,
       lives: 3,
-      combo: 0,
-      maxCombo: 0,
       wave: 1,
-      speed: 1,
       playerX: 50,
       commits: [],
-      totalCommits: 0,
-      successfulReverts: 0,
       gameLoop: null,
       spawnTimer: null
     };
 
-    const commitTemplates = {
+    const commitTypes = {
       good: [
-        { hash: 'a1b2c3d', message: 'feat: add user authentication', author: 'alice' },
-        { hash: 'e4f5g6h', message: 'fix: resolve memory leak', author: 'bob' },
-        { hash: 'i7j8k9l', message: 'docs: update README', author: 'charlie' },
-        { hash: 'm0n1o2p', message: 'test: add unit tests', author: 'diana' },
-        { hash: 'q3r4s5t', message: 'refactor: improve code structure', author: 'eve' }
+        { message: "feat: add authentication", class: "commit-good" },
+        { message: "fix: memory leak", class: "commit-good" },
+        { message: "docs: update README", class: "commit-good" },
+        { message: "test: add unit tests", class: "commit-good" }
       ],
       bad: [
-        { hash: 'deadbee', message: 'console.log everywhere lol', author: 'intern' },
-        { hash: 'badc0de', message: 'quick fix dont review', author: 'rushed_dev' },
-        { hash: 'f00ba4', message: 'TODO: fix this later', author: 'lazy_coder' },
-        { hash: '1337h4x', message: 'rm -rf / just kidding', author: 'script_kiddie' },
-        { hash: 'c0ffee', message: 'untested production hotfix', author: 'cowboy_coder' }
+        { message: "console.log everywhere", class: "commit-bad" },
+        { message: "quick fix dont review", class: "commit-bad" },
+        { message: "TODO: fix later", class: "commit-bad" },
+        { message: "untested hotfix", class: "commit-bad" }
       ]
     };
 
-    function getRandomCommit(type) {
-      const templates = commitTemplates[type];
+    function updateUI() {
+      document.getElementById('score').textContent = gameState.score;
+      document.getElementById('wave').textContent = gameState.wave;
+      document.getElementById('lives').innerHTML = '❤️'.repeat(gameState.lives) + '🖤'.repeat(3 - gameState.lives);
+    }
+
+    function createCommit() {
+      const isGood = Math.random() > 0.6;
+      const type = isGood ? 'good' : 'bad';
+      const templates = commitTypes[type];
       const template = templates[Math.floor(Math.random() * templates.length)];
-      return {
-        ...template,
-        type: type,
-        id: Math.random().toString(36).substr(2, 9)
-      };
-    }
-
-    function createCommitElement(commit) {
-      const element = document.createElement('div');
-      element.className = `commit-log ${commit.type}`;
-      element.dataset.id = commit.id;
-      element.dataset.type = commit.type;
       
-      element.innerHTML = `
-        <span class="commit-hash">${commit.hash}</span>
-        <span class="commit-message">${commit.message}</span>
-        <span class="commit-author">@${commit.author}</span>
-      `;
+      const commit = document.createElement('div');
+      commit.className = `commit-item ${template.class}`;
+      commit.dataset.type = type;
+      commit.style.top = '-50px';
+      commit.style.left = (Math.random() * 80 + 10) + '%';
+      commit.textContent = template.message;
       
-      element.style.left = Math.random() * 80 + 10 + '%';
-      element.style.top = '-60px';
+      commit.addEventListener('click', () => handleCommitClick(commit, type));
       
-      element.addEventListener('click', () => handleCommitClick(element, commit));
-      
-      return element;
-    }
-
-    function spawnCommit() {
-      if (!gameState.isRunning || gameState.isPaused) return;
-      
-      const isGoodCommit = Math.random() > 0.4;
-      const commit = getRandomCommit(isGoodCommit ? 'good' : 'bad');
-      
+      document.getElementById('commits-container').appendChild(commit);
       gameState.commits.push(commit);
-      gameState.totalCommits++;
+    }
+
+    function handleCommitClick(commit, type) {
+      commit.remove();
+      gameState.commits = gameState.commits.filter(c => c !== commit);
       
-      const element = createCommitElement(commit);
-      document.getElementById('tsunami-container').appendChild(element);
+      const data = {
+        wave: gameState.wave,
+        score: gameState.score,
+        combo: 0,
+        action: "click",
+        commitType: type
+      };
       
-      const spawnDelay = Math.max(500, 2000 - (gameState.wave * 100) - (gameState.speed * 200));
-      gameState.spawnTimer = setTimeout(spawnCommit, spawnDelay + Math.random() * 1000);
+      fetch('/api/tsunami/click', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .then(result => {
+        if (result.success) {
+          gameState.score += result.scoreGain || 10;
+          document.getElementById('message').textContent = result.message;
+          document.getElementById('message').style.color = '#00ff41';
+        } else {
+          gameState.lives--;
+          document.getElementById('message').textContent = result.message;
+          document.getElementById('message').style.color = '#ff6b6b';
+          
+          if (gameState.lives <= 0) {
+            endGame();
+          }
+        }
+        updateUI();
+      })
+      .catch(() => {
+        document.getElementById('message').textContent = "API 연결 실패";
+        document.getElementById('message').style.color = '#ff6b6b';
+      });
     }
 
     function moveCommits() {
       if (!gameState.isRunning || gameState.isPaused) return;
       
-      const container = document.getElementById('tsunami-container');
-      const commits = container.querySelectorAll('.commit-log');
-      
-      commits.forEach(commitElement => {
-        const currentTop = parseInt(commitElement.style.top) || -60;
-        const newTop = currentTop + (3 + gameState.speed * 2);
+      gameState.commits.forEach((commit, index) => {
+        if (!commit.parentNode) return;
         
-        commitElement.style.top = newTop + 'px';
+        const currentTop = parseInt(commit.style.top) || -50;
+        const newTop = currentTop + 2;
         
-        if (newTop > window.innerHeight - 80) {
-          const commitType = commitElement.dataset.type;
-          
-          if (commitType === 'bad') {
-            loseLife();
-            gameState.combo = 0;
+        if (newTop > 400) {
+          if (commit.dataset.type === 'bad') {
+            gameState.lives--;
+            document.getElementById('message').textContent = "나쁜 커밋이 통과했습니다!";
+            document.getElementById('message').style.color = '#ff6b6b';
+            
+            if (gameState.lives <= 0) {
+              endGame();
+              return;
+            }
           }
           
-          commitElement.remove();
-          gameState.commits = gameState.commits.filter(c => c.id !== commitElement.dataset.id);
+          commit.remove();
+          gameState.commits.splice(index, 1);
+          updateUI();
+        } else {
+          commit.style.top = newTop + 'px';
         }
       });
     }
 
-    function handleCommitClick(element, commit) {
-      if (!gameState.isRunning || gameState.isPaused) return;
-      
-      element.classList.add('clicked');
-      
-      if (commit.type === 'bad') {
-        gameState.score += 10 + (gameState.combo * 2);
-        gameState.combo++;
-        gameState.successfulReverts++;
-        
-        if (gameState.combo > gameState.maxCombo) {
-          gameState.maxCombo = gameState.combo;
-        }
-        
-        if (gameState.combo % 5 === 0) {
-          gameState.score += 50;
-          showFloatingText(element, '+50 COMBO!');
-        }
-        
-      } else {
-        loseLife();
-        gameState.combo = 0;
-        showFloatingText(element, 'WRONG!');
-      }
-      
-      setTimeout(() => element.remove(), 300);
-      gameState.commits = gameState.commits.filter(c => c.id !== commit.id);
-      updateUI();
-    }
-
-    function loseLife() {
-      gameState.lives--;
-      
-      if (gameState.lives <= 0) {
-        endGame(false);
-      } else {
-        document.getElementById('player').style.filter = 'drop-shadow(0 0 20px #ff6b6b)';
-        setTimeout(() => {
-          document.getElementById('player').style.filter = 'drop-shadow(0 0 10px #00ff41)';
-        }, 500);
-      }
-    }
-
-    function showFloatingText(element, text) {
-      const floatingText = document.createElement('div');
-      floatingText.textContent = text;
-      floatingText.style.cssText = `
-        position: absolute;
-        top: ${element.offsetTop}px;
-        left: ${element.offsetLeft}px;
-        color: #00ff41;
-        font-weight: 900;
-        font-size: 1.2rem;
-        pointer-events: none;
-        z-index: 100;
-        animation: float-up 1s ease-out forwards;
-      `;
-      
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes float-up {
-          0% { transform: translateY(0); opacity: 1; }
-          100% { transform: translateY(-50px); opacity: 0; }
-        }
-      `;
-      document.head.appendChild(style);
-      
-      document.getElementById('tsunami-container').appendChild(floatingText);
-      
-      setTimeout(() => {
-        floatingText.remove();
-        style.remove();
-      }, 1000);
-    }
-
-    function updateUI() {
-      document.getElementById('current-score').textContent = gameState.score;
-      document.getElementById('combo').textContent = gameState.combo;
-      document.getElementById('speed').textContent = gameState.speed.toFixed(1) + 'x';
-      
-      const hearts = '❤️'.repeat(gameState.lives) + '🖤'.repeat(3 - gameState.lives);
-      document.getElementById('lives').textContent = hearts;
-      
-      const progress = Math.min(100, (gameState.score / (gameState.wave * 500)) * 100);
-      document.getElementById('progress-fill').style.width = progress + '%';
-      
-      if (gameState.score > gameState.wave * 500) {
-        gameState.wave++;
-        gameState.speed += 0.3;
-        document.getElementById('wave-number').textContent = gameState.wave;
-        
-        gameState.score += 100;
-        
-        if (window.ghcUnlock && gameState.wave >= 5) {
-          window.ghcUnlock('tsunami-survivor', '쓰나미 생존자', 'good');
-        }
-      }
-    }
-
-    function movePlayer(direction) {
-      if (!gameState.isRunning || gameState.isPaused) return;
-      
-      gameState.playerX = Math.max(5, Math.min(95, gameState.playerX + direction * 5));
-      document.getElementById('player').style.left = gameState.playerX + '%';
-    }
-
     function startGame() {
-      document.getElementById('instructions').style.display = 'none';
-      document.getElementById('game-over').style.display = 'none';
-      
       gameState = {
         isRunning: true,
         isPaused: false,
         score: 0,
         lives: 3,
-        combo: 0,
-        maxCombo: 0,
         wave: 1,
-        speed: 1,
         playerX: 50,
         commits: [],
-        totalCommits: 0,
-        successfulReverts: 0,
         gameLoop: null,
         spawnTimer: null
       };
       
-      document.getElementById('tsunami-container').innerHTML = '';
+      document.getElementById('commits-container').innerHTML = '';
+      document.getElementById('start-btn').disabled = true;
+      document.getElementById('pause-btn').disabled = false;
+      document.getElementById('message').textContent = "게임 시작!";
+      document.getElementById('message').style.color = '#3b82f6';
       
       updateUI();
       
-      gameState.gameLoop = setInterval(() => {
-        moveCommits();
-        updateUI();
-      }, 50);
+      gameState.gameLoop = setInterval(moveCommits, 50);
+      gameState.spawnTimer = setInterval(createCommit, 2000);
       
-      spawnCommit();
+      fetch('/api/tsunami/start', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({wave: 1, score: 0, combo: 0, action: "start"})
+      }).catch(() => {
+        document.getElementById('message').textContent = "API 연결 실패 - 오프라인 모드";
+        document.getElementById('message').style.color = '#ffa500';
+      });
     }
 
     function pauseGame() {
       gameState.isPaused = !gameState.isPaused;
-      const btn = document.getElementById('pause-btn');
-      btn.textContent = gameState.isPaused ? '▶️ 계속' : '⏸️ 일시정지';
+      document.getElementById('pause-btn').textContent = gameState.isPaused ? '계속' : '일시정지';
     }
 
-    function restartGame() {
-      endGame(false, false);
-      setTimeout(startGame, 100);
-    }
-
-    function endGame(isVictory, showModal = true) {
+    function endGame() {
       gameState.isRunning = false;
-      
       clearInterval(gameState.gameLoop);
-      clearTimeout(gameState.spawnTimer);
+      clearInterval(gameState.spawnTimer);
       
-      if (showModal) {
-        const successRate = gameState.totalCommits > 0 
-          ? Math.round((gameState.successfulReverts / gameState.totalCommits) * 100)
-          : 0;
-        
-        document.getElementById('final-score').textContent = gameState.score;
-        document.getElementById('final-wave').textContent = gameState.wave;
-        document.getElementById('success-rate').textContent = successRate + '%';
-        document.getElementById('max-combo').textContent = gameState.maxCombo;
-        
-        const gameOverEl = document.getElementById('game-over');
-        const titleEl = document.getElementById('game-over-title');
-        
-        if (isVictory || gameState.score > 1000) {
-          gameOverEl.className = 'game-over success';
-          titleEl.textContent = '🏆 쓰나미 정복!';
-          titleEl.style.color = '#00ff41';
-        } else {
-          gameOverEl.className = 'game-over';
-          titleEl.textContent = '💀 코드 히스토리 휘발';
-          titleEl.style.color = '#ff6b6b';
-        }
-        
-        gameOverEl.style.display = 'block';
+      document.getElementById('start-btn').disabled = false;
+      document.getElementById('pause-btn').disabled = true;
+      document.getElementById('pause-btn').textContent = '일시정지';
+      
+      const data = {
+        wave: gameState.wave,
+        score: gameState.score,
+        combo: 0,
+        action: "end"
+      };
+      
+      fetch('/api/tsunami/end', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .then(result => {
+        document.getElementById('message').textContent = `게임 종료! ${result.message} (${result.rank})`;
+        document.getElementById('message').style.color = '#3b82f6';
         
         if (window.ghcAddScore) {
-          window.ghcAddScore(Math.floor(gameState.score / 10));
+          window.ghcAddScore(result.scoreDiff || 0);
         }
-      }
+      })
+      .catch(() => {
+        document.getElementById('message').textContent = `게임 종료! 최종 점수: ${gameState.score}`;
+        document.getElementById('message').style.color = '#3b82f6';
+      });
     }
 
     document.addEventListener('keydown', (e) => {
-      switch(e.key) {
-        case 'ArrowLeft':
-          movePlayer(-1);
-          break;
-        case 'ArrowRight':
-          movePlayer(1);
-          break;
-        case ' ':
-          e.preventDefault();
-          pauseGame();
-          break;
+      if (!gameState.isRunning || gameState.isPaused) return;
+      
+      const player = document.getElementById('player');
+      if (e.key === 'ArrowLeft') {
+        gameState.playerX = Math.max(5, gameState.playerX - 5);
+        player.style.left = gameState.playerX + '%';
+      } else if (e.key === 'ArrowRight') {
+        gameState.playerX = Math.min(95, gameState.playerX + 5);
+        player.style.left = gameState.playerX + '%';
       }
     });
 
-    document.getElementById('pause-btn').addEventListener('click', pauseGame);
-    document.getElementById('restart-btn').addEventListener('click', restartGame);
-
-    document.getElementById('wave-number').textContent = gameState.wave;
     updateUI();
   </script>
 </body>

@@ -2,957 +2,706 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>🤡 코드 리뷰 배틀</title>
-  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>🤡 코드 리뷰 전쟁터</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/arcade.css">
+  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
-      color: #f0f6fc;
-      font-family: 'JetBrains Mono', 'Pretendard', monospace;
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: #111;
+      color: #fff;
+      font-family: Pretendard, sans-serif;
+      margin: 0;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 25% 75%, rgba(255, 165, 0, 0.05) 0%, transparent 50%),
-                  radial-gradient(circle at 75% 25%, rgba(255, 140, 0, 0.03) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: -2;
-    }
-
-    .hud {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 20px;
-      background: rgba(13, 17, 23, 0.95);
-      backdrop-filter: blur(15px);
-      border-bottom: 1px solid #30363d;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .hud-left {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .logo {
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: #00ff41;
-      font-size: 1.2rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      background: rgba(33, 38, 45, 0.9);
-      border: 1px solid #30363d;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 700;
-      backdrop-filter: blur(10px);
-    }
-
-    .hud-home {
-      background: linear-gradient(145deg, #21262d, #404040);
-      border: 1px solid #30363d;
-      color: #f0f6fc;
-      border-radius: 12px;
-      padding: 10px 16px;
-      transition: all 0.3s ease;
-      font-weight: 600;
-    }
-
-    .hud-home:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .hud-right {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .achv {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      background: rgba(33, 38, 45, 0.9);
-      border: 1px dashed #30363d;
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      backdrop-filter: blur(10px);
-    }
-
-    .title-section {
-      text-align: center;
-      padding: 3rem 2rem;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .main-title {
-      font-size: clamp(2.5rem, 8vw, 4rem);
-      font-weight: 900;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(45deg, #ffa500, #ff8c00, #ff7f50, #ffa500);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: review-gradient 3s ease-in-out infinite;
-    }
-
-    @keyframes review-gradient {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    .subtitle {
-      color: #7d8590;
-      font-size: 1.2rem;
-      font-family: 'Pretendard', sans-serif;
-    }
-
-    .game-container {
+    .main-content {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 20px;
     }
 
-    .review-arena {
-      background: linear-gradient(145deg, #2a1a0d, #4a2a1a);
-      border: 3px solid #ffa500;
-      border-radius: 25px;
-      padding: 3rem;
-      margin: 2rem 0;
+    h1 {
       text-align: center;
-      box-shadow: 
-          0 0 50px rgba(255, 165, 0, 0.3),
-          inset 0 0 30px rgba(255, 140, 0, 0.1);
-      position: relative;
-      overflow: hidden;
+      margin: 0 0 8px;
+      font-size: 2.8rem;
+      color: #fff;
     }
 
-    .review-arena::before {
-      content: '🎭';
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 3rem;
-      background: linear-gradient(145deg, #2a1a0d, #4a2a1a);
-      padding: 0 20px;
-      border: 2px solid #ffa500;
-      border-radius: 50%;
+    .sub {
+      text-align: center;
+      color: #bbb;
+      margin-bottom: 20px;
+      font-size: 16px;
     }
 
-    .main-grid {
+    .battlefield {
       display: grid;
       grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-      margin: 2rem 0;
+      gap: 25px;
+      margin: 20px 0;
     }
 
-    .editor-section {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
-      border: 2px solid #404040;
+    .editor-panel {
+      background: #1e1e1e;
+      border: 1px solid #333;
       border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      padding: 20px;
     }
 
-    .editor-header {
-      background: linear-gradient(90deg, #21262d, #30363d);
-      padding: 12px 20px;
+    .panel-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #30363d;
+      align-items: center;
+      margin-bottom: 15px;
     }
 
-    .editor-controls {
-      display: flex;
-      gap: 8px;
+    .panel-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: #ddd;
     }
 
-    .editor-control {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-
-    .control-close { background: #ff5f56; }
-    .control-minimize { background: #ffbd2e; }
-    .control-maximize { background: #27ca3f; }
-
-    .editor-title {
-      color: #7d8590;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
-
-    .line-counter {
-      color: #ffa500;
-      font-size: 0.8rem;
-      font-weight: 800;
+    .battle-timer {
+      background: #e74c3c;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 16px;
     }
 
     #editor {
       height: 500px;
-      width: 100%;
+      border: 1px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
     }
 
-    .review-panel {
+    .code-templates {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .template-btn {
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .template-btn:hover {
+      background: #444;
+      transform: translateY(-1px);
+    }
+
+    .submit-area {
       display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+      gap: 15px;
+      align-items: center;
+      margin-top: 15px;
     }
 
-    .metrics-card {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
-      border: 2px solid #404040;
+    .submit-btn {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 15px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      background: #c0392b;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auto-review-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .auto-review-toggle input[type=checkbox] {
+      width: 16px;
+      height: 16px;
+      accent-color: #6ea8ff;
+    }
+
+    .stats-panel {
+      background: #181818;
+      border: 1px solid #333;
       border-radius: 15px;
-      padding: 1.5rem;
-      transition: all 0.3s ease;
+      padding: 20px;
     }
 
-    .metrics-card:hover {
-      transform: translateY(-3px);
-      border-color: #ffa500;
-      box-shadow: 0 10px 25px rgba(255, 165, 0, 0.3);
+    .rage-meters {
+      margin: 20px 0;
     }
 
-    .metric-item {
+    .meter-group {
+      margin: 15px 0;
+    }
+
+    .meter-label {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 8px;
+      font-size: 14px;
     }
 
-    .metric-label {
-      font-weight: 600;
-      color: #f0f6fc;
-    }
-
-    .metric-value {
-      font-weight: 900;
-      font-size: 1.5rem;
-    }
-
-    .progress-bar {
+    .meter-bar {
       height: 12px;
-      background: #30363d;
+      background: #2a2a2a;
       border-radius: 6px;
       overflow: hidden;
-      margin-top: 0.5rem;
+      position: relative;
     }
 
-    .progress-fill {
+    .meter-fill {
       height: 100%;
-      border-radius: 6px;
       transition: width 0.5s ease;
+      border-radius: 6px;
     }
 
-    .readability-fill { background: linear-gradient(90deg, #ff6b6b, #ffa500, #00ff41); }
-    .performance-fill { background: linear-gradient(90deg, #ff6b6b, #f9ca24, #00ff41); }
-    .anger-fill { background: linear-gradient(90deg, #00ff41, #f9ca24, #ff6b6b); }
+    .meter-readability .meter-fill {
+      background: #2ecc71;
+    }
 
-    .ai-judge {
+    .meter-performance .meter-fill {
+      background: #3498db;
+    }
+
+    .meter-ai-anger .meter-fill {
+      background: #e74c3c;
+    }
+
+    .ai-avatar {
+      font-size: 80px;
       text-align: center;
-      padding: 2rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 15px;
-      margin: 1rem 0;
+      margin: 20px 0;
+      transition: all 0.3s ease;
     }
 
-    .judge-avatar {
-      font-size: 5rem;
-      margin-bottom: 1rem;
-      filter: drop-shadow(0 0 20px currentColor);
-      transition: all 0.5s ease;
-    }
-
-    .judge-avatar.calm { color: #00ff41; }
-    .judge-avatar.annoyed { color: #f9ca24; }
-    .judge-avatar.furious { 
-      color: #ff6b6b; 
-      animation: judge-rage 1s infinite alternate;
-    }
-
-    @keyframes judge-rage {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.1); }
-    }
-
-    .verdict {
-      font-size: 1.2rem;
-      font-weight: 800;
-      margin: 1rem 0;
-      padding: 1rem;
+    .battle-result {
+      background: #232323;
+      border: 1px solid #444;
       border-radius: 10px;
-      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
     }
 
-    .tips-section {
-      background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
-      border: 2px solid #404040;
-      border-radius: 15px;
-      padding: 1.5rem;
-      margin: 1rem 0;
+    .result-message {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .result-score {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .score-positive { color: #2ecc71; }
+    .score-negative { color: #e74c3c; }
+    .score-neutral { color: #bbb; }
+
+    .refactor-tips {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 15px 0;
+      max-height: 150px;
+      overflow-y: auto;
     }
 
     .tips-title {
-      font-weight: 800;
-      color: #ffa500;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ddd;
     }
 
     .tips-list {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
 
     .tips-list li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #30363d;
-      color: #7d8590;
-    }
-
-    .tips-list li:last-child {
-      border-bottom: none;
-    }
-
-    .review-button {
-      width: 100%;
-      background: linear-gradient(145deg, #ffa500, #ff8c00);
-      border: none;
-      color: white;
-      font-size: 1.2rem;
-      font-weight: 900;
-      padding: 15px 20px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-family: 'JetBrains Mono', monospace;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 
-          0 6px 20px rgba(255, 165, 0, 0.4),
-          inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-    .review-button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.6s;
-    }
-
-    .review-button:hover::before {
-      left: 100%;
-    }
-
-    .review-button:hover {
-      background: linear-gradient(145deg, #ff8c00, #ffa500);
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 
-          0 10px 30px rgba(255, 165, 0, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    .review-button.loading {
-      background: linear-gradient(145deg, #666, #888);
-      cursor: not-allowed;
-      animation: loading-pulse 1.5s infinite;
-    }
-
-    @keyframes loading-pulse {
-      0%, 100% { opacity: 0.8; }
-      50% { opacity: 1; }
-    }
-
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: -1;
-    }
-
-    .particle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: #ffa500;
-      border-radius: 50%;
-      animation: code-float 10s infinite linear;
-    }
-
-    @keyframes code-float {
-      0% {
-        transform: translateY(100vh) translateX(0) scale(0) rotate(0deg);
-        opacity: 0;
-      }
-      5% {
-        opacity: 1;
-        transform: scale(1);
-      }
-      95% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-10vh) translateX(80px) scale(0) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    .instructions {
-      background: rgba(0, 0, 0, 0.3);
-      border-left: 4px solid #ffa500;
-      padding: 1.5rem;
-      margin: 2rem 0;
-      border-radius: 0 10px 10px 0;
-    }
-
-    .instructions-title {
-      font-weight: 800;
-      color: #ffa500;
-      margin-bottom: 1rem;
-    }
-
-    @media (max-width: 1200px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .game-container {
-        padding: 1rem;
-      }
-      
-      .review-arena {
-        padding: 2rem 1rem;
-      }
+      padding: 4px 0;
+      font-size: 13px;
+      color: #bbb;
+      border-left: 2px solid #6ea8ff;
+      padding-left: 8px;
+      margin: 4px 0;
     }
 
     .code-stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin: 1rem 0;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 15px 0;
     }
 
-    .stat-mini {
-      text-align: center;
-      padding: 0.5rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      border: 1px solid #30363d;
-    }
-
-    .stat-mini-value {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: #ffa500;
-    }
-
-    .stat-mini-label {
-      font-size: 0.7rem;
-      color: #7d8590;
-    }
-
-    .time-pressure {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 107, 107, 0.9);
-      color: white;
-      padding: 8px 15px;
-      border-radius: 20px;
-      font-weight: 800;
-      font-size: 0.9rem;
-      display: none;
-      animation: time-pulse 1s infinite alternate;
-    }
-
-    @keyframes time-pulse {
-      0% { background: rgba(255, 107, 107, 0.9); }
-      100% { background: rgba(255, 107, 107, 1); }
-    }
-
-    .quality-indicator {
-      position: relative;
-      margin: 1rem 0;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.5);
-      border-radius: 10px;
-      border: 2px solid #30363d;
+    .stat-item {
+      background: #232323;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 10px;
       text-align: center;
     }
 
-    .quality-score {
-      font-size: 2rem;
-      font-weight: 900;
-      margin: 0.5rem 0;
+    .stat-label {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 4px;
     }
 
-    .score-excellent { color: #00ff41; }
-    .score-good { color: #f9ca24; }
-    .score-poor { color: #ff6b6b; }
+    .stat-value {
+      font-size: 16px;
+      font-weight: bold;
+    }
 
-    .review-history {
-      max-height: 200px;
-      overflow-y: auto;
-      margin: 1rem 0;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.3);
+    .challenge-mode {
+      background: #2a1810;
+      border: 1px solid #8b4513;
       border-radius: 10px;
-      border: 1px solid #30363d;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
     }
 
-    .history-item {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #30363d;
-      font-size: 0.9rem;
-      color: #7d8590;
-    }
-
-    .history-item:last-child {
-      border-bottom: none;
+    @media (max-width: 1024px) {
+      .battlefield {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+<script src="/js/arcade.js"></script>
+<script>window.ghcMountHUD({ showHome:true });</script>
 <body>
-  <div class="particles" id="particles"></div>
-  <div class="time-pressure" id="time-pressure">⏰ 제한시간: 60초</div>
-  
-  <header class="hud" id="hud">
-    <div class="hud-left">
-      <a class="hud-home" href="/">← 로비</a>
-      <div class="logo">GHC</div>
-      <div class="badge">
-        SCORE&nbsp;<span id="hud-score">1337</span>
+<header class="hud" id="hud"></header>
+
+<div class="main-content">
+  <h1>🤡 코드 리뷰 전쟁터</h1>
+  <div class="sub">AI 리뷰봇과의 치열한 리팩토링 배틀</div>
+
+  <div class="challenge-mode" id="challenge-mode">
+    <div>⚡ 챌린지 모드: 60초 안에 모든 지표를 80점 이상으로!</div>
+    <div style="font-size: 12px; color: #bbb; margin-top: 5px;">실패 시 -50점 페널티</div>
+  </div>
+
+  <div class="battlefield">
+    <div class="editor-panel">
+      <div class="panel-header">
+        <div class="panel-title">💻 코드 에디터</div>
+        <div id="battle-timer" class="battle-timer">60s</div>
       </div>
-    </div>
-    <div class="hud-right" id="hud-achv">
-      <div class="achv">🤡 리뷰 초보</div>
-    </div>
-  </header>
-
-  <section class="title-section">
-    <h1 class="main-title">🤡 CODE REVIEW BATTLE</h1>
-    <p class="subtitle">AI 심판관과의 코드 품질 대결</p>
-  </section>
-
-  <main class="game-container">
-    <div class="review-arena">
-      <div>🏟️ 코드 리뷰 경기장 🏟️</div>
-      <div style="margin-top: 1rem; font-size: 1.2rem; color: #7d8590;">
-        AI 심판관이 당신의 코드를 엄격하게 평가합니다
+      
+      <div class="code-templates">
+        <button class="template-btn" onclick="loadTemplate('basic')">🎯 기본 문제</button>
+        <button class="template-btn" onclick="loadTemplate('nightmare')">👹 지옥 문제</button>
+        <button class="template-btn" onclick="loadTemplate('legacy')">💀 레거시</button>
       </div>
-    </div>
 
-    <div class="instructions">
-      <div class="instructions-title">🎯 배틀 규칙</div>
-      <div>코드를 작성하거나 수정한 후 리뷰를 요청하세요. 가독성, 성능, AI 빡침 지수가 평가됩니다. 높은 품질의 코드를 작성할수록 더 많은 점수를 얻습니다!</div>
-    </div>
+      <div id="editor"></div>
 
-    <div class="main-grid">
-      <div class="editor-section">
-        <div class="editor-header">
-          <div class="editor-controls">
-            <div class="editor-control control-close"></div>
-            <div class="editor-control control-minimize"></div>
-            <div class="editor-control control-maximize"></div>
-          </div>
-          <div class="editor-title">ReviewBattle.java</div>
-          <div class="line-counter" id="line-counter">Lines: 0</div>
-        </div>
-        <div id="editor"></div>
-        <div class="code-stats">
-          <div class="stat-mini">
-            <div class="stat-mini-value" id="char-count">0</div>
-            <div class="stat-mini-label">Characters</div>
-          </div>
-          <div class="stat-mini">
-            <div class="stat-mini-value" id="method-count">0</div>
-            <div class="stat-mini-label">Methods</div>
-          </div>
-          <div class="stat-mini">
-            <div class="stat-mini-value" id="complexity">0</div>
-            <div class="stat-mini-label">Complexity</div>
-          </div>
-        </div>
-        <button id="review-button" class="review-button">
-          🔍 REQUEST REVIEW
+      <div class="submit-area">
+        <button class="submit-btn" id="review-btn" onclick="requestReview()">
+          🔍 AI 리뷰 요청
         </button>
-      </div>
-
-      <div class="review-panel">
-        <div class="ai-judge">
-          <div class="judge-avatar" id="judge-avatar">🤖</div>
-          <div class="verdict" id="verdict">코드를 제출하고 심판을 받으세요</div>
-          <div class="quality-indicator">
-            <div>전체 품질 점수</div>
-            <div class="quality-score score-good" id="quality-score">85</div>
-          </div>
-        </div>
-
-        <div class="metrics-card">
-          <div class="metric-item">
-            <div class="metric-label">📖 가독성</div>
-            <div class="metric-value" id="readability-score">0</div>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill readability-fill" id="readability-bar" style="width: 0%"></div>
-          </div>
-
-          <div class="metric-item">
-            <div class="metric-label">⚡ 성능</div>
-            <div class="metric-value" id="performance-score">0</div>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill performance-fill" id="performance-bar" style="width: 0%"></div>
-          </div>
-
-          <div class="metric-item">
-            <div class="metric-label">😡 AI 빡침</div>
-            <div class="metric-value" id="anger-score">0</div>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill anger-fill" id="anger-bar" style="width: 0%"></div>
-          </div>
-        </div>
-
-        <div class="tips-section">
-          <div class="tips-title">
-            💡 리팩토링 팁
-          </div>
-          <ul class="tips-list" id="tips-list">
-            <li>코드를 작성해보세요</li>
-          </ul>
-        </div>
-
-        <div class="review-history" id="review-history">
-          <div class="history-item">리뷰 기록이 여기에 표시됩니다</div>
+        <div class="auto-review-toggle">
+          <input type="checkbox" id="auto-review" onchange="toggleAutoReview()">
+          <label for="auto-review">실시간 리뷰</label>
         </div>
       </div>
     </div>
-  </main>
 
-  <script src="/js/arcade.js"></script>
-  <script>
-    let editor;
-    let isReviewing = false;
-    let reviewCount = 0;
-    let bestQualityScore = parseInt(localStorage.getItem('bestQualityScore') || '0');
+    <div class="stats-panel">
+      <div class="panel-title">📊 전투 현황</div>
 
-    function createCodeParticles() {
-      const particles = document.getElementById('particles');
-      particles.innerHTML = '';
-      
-      const codeColors = ['#ffa500', '#ff8c00', '#ff7f50', '#daa520'];
-      
-      for (let i = 0; i < 25; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 10 + 's';
-        particle.style.animationDuration = (Math.random() * 5 + 5) + 's';
-        particle.style.background = codeColors[Math.floor(Math.random() * codeColors.length)];
-        
-        particles.appendChild(particle);
-      }
-    }
+      <div class="rage-meters">
+        <div class="meter-group meter-readability">
+          <div class="meter-label">
+            <span>가독성</span>
+            <span id="readability-value">0</span>
+          </div>
+          <div class="meter-bar">
+            <div id="readability-fill" class="meter-fill" style="width: 0%"></div>
+          </div>
+        </div>
 
-    function initializeEditor() {
-      require.config({ 
-        paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }
-      });
-      
-      require(["vs/editor/editor.main"], function () {
-        editor = monaco.editor.create(document.getElementById('editor'), {
-          value: `public class ReviewDemo {
-    public static void main(String[] args){
-        int sum=0;
-        for(int i=0;i<200;i++){
-            for(int j=0;j<50;j++){
-                sum+=i*j;
+        <div class="meter-group meter-performance">
+          <div class="meter-label">
+            <span>성능</span>
+            <span id="performance-value">0</span>
+          </div>
+          <div class="meter-bar">
+            <div id="performance-fill" class="meter-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="meter-group meter-ai-anger">
+          <div class="meter-label">
+            <span>AI 분노도</span>
+            <span id="ai-anger-value">0</span>
+          </div>
+          <div class="meter-bar">
+            <div id="ai-anger-fill" class="meter-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ai-avatar" class="ai-avatar">🤖</div>
+
+      <div class="battle-result" id="battle-result">
+        <div id="result-message" class="result-message">코드를 작성하고 리뷰를 요청하세요!</div>
+        <div id="result-score" class="result-score score-neutral">점수: 대기중</div>
+      </div>
+
+      <div class="code-stats">
+        <div class="stat-item">
+          <div class="stat-label">코드 라인</div>
+          <div id="line-count" class="stat-value">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">함수 개수</div>
+          <div id="function-count" class="stat-value">0</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">복잡도</div>
+          <div id="complexity" class="stat-value">1</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">리뷰 횟수</div>
+          <div id="review-count" class="stat-value">0</div>
+        </div>
+      </div>
+
+      <div class="refactor-tips">
+        <div class="tips-title">🛠️ 리팩토링 제안</div>
+        <ul id="tips-list" class="tips-list">
+          <li>코드를 분석하면 제안이 나타납니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let editor;
+  let autoReviewTimer;
+  let challengeTimer;
+  let challengeActive = false;
+  let reviewCount = 0;
+  let timeLeft = 60;
+
+  const codeTemplates = {
+    basic: `public class Calculator {
+    public static void main(String[] args) {
+        int sum = 0;
+        for(int i = 0; i < 100; i++) {
+            for(int j = 0; j < 50; j++) {
+                sum += i * j;
             }
         }
-        if(sum>0){
-            if(sum%2==0){
+        if(sum > 0) {
+            if(sum % 2 == 0) {
                 System.out.println("even");
-            }else{
+            } else {
                 System.out.println("odd");
             }
         }
     }
 }`,
-          language: "java",
-          theme: "vs-dark",
-          automaticLayout: true,
-          fontSize: 14,
-          fontFamily: 'JetBrains Mono, monospace',
-          minimap: { enabled: false },
-          scrollBeyondLastLine: false,
-          roundedSelection: false,
-          padding: { top: 15, bottom: 15 }
-        });
-
-        editor.onDidChangeModelContent(() => {
-          updateCodeStats();
-        });
-        
-        updateCodeStats();
-      });
-    }
-
-    function updateCodeStats() {
-      if (!editor) return;
-      
-      const code = editor.getValue();
-      const lines = code.split('\n').length;
-      const chars = code.length;
-      const methods = (code.match(/\w+\s*\([^)]*\)\s*{/g) || []).length;
-      const complexity = calculateComplexity(code);
-      
-      document.getElementById('line-counter').textContent = `Lines: ${lines}`;
-      document.getElementById('char-count').textContent = chars;
-      document.getElementById('method-count').textContent = methods;
-      document.getElementById('complexity').textContent = complexity;
-    }
-
-    function calculateComplexity(code) {
-      const forLoops = (code.match(/for\s*\(/g) || []).length;
-      const whileLoops = (code.match(/while\s*\(/g) || []).length;
-      const ifStatements = (code.match(/if\s*\(/g) || []).length;
-      const switches = (code.match(/switch\s*\(/g) || []).length;
-      
-      return forLoops * 2 + whileLoops * 2 + ifStatements + switches;
-    }
-
-    function updateJudgeState(angerLevel) {
-      const judgeAvatar = document.getElementById('judge-avatar');
-      
-      if (angerLevel < 30) {
-        judgeAvatar.textContent = '😊';
-        judgeAvatar.className = 'judge-avatar calm';
-      } else if (angerLevel < 60) {
-        judgeAvatar.textContent = '😐';
-        judgeAvatar.className = 'judge-avatar annoyed';
-      } else {
-        judgeAvatar.textContent = '😡';
-        judgeAvatar.className = 'judge-avatar furious';
-      }
-    }
-
-    function updateProgressBar(id, value) {
-      const bar = document.getElementById(id);
-      bar.style.width = Math.min(100, Math.max(0, value)) + '%';
-    }
-
-    function updateQualityScore(readability, performance, anger) {
-      const qualityScore = Math.round((readability + performance + (100 - anger)) / 3);
-      const scoreElement = document.getElementById('quality-score');
-      
-      scoreElement.textContent = qualityScore;
-      
-      if (qualityScore >= 80) {
-        scoreElement.className = 'quality-score score-excellent';
-      } else if (qualityScore >= 60) {
-        scoreElement.className = 'quality-score score-good';
-      } else {
-        scoreElement.className = 'quality-score score-poor';
-      }
-      
-      if (qualityScore > bestQualityScore) {
-        bestQualityScore = qualityScore;
-        localStorage.setItem('bestQualityScore', bestQualityScore);
-      }
-      
-      return qualityScore;
-    }
-
-    function addReviewHistory(message) {
-      const historyContainer = document.getElementById('review-history');
-      const historyItem = document.createElement('div');
-      historyItem.className = 'history-item';
-      historyItem.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
-      
-      historyContainer.insertBefore(historyItem, historyContainer.firstChild);
-      
-      if (historyContainer.children.length > 10) {
-        historyContainer.removeChild(historyContainer.lastChild);
-      }
-    }
-
-    function updateTipsList(tips) {
-      const tipsList = document.getElementById('tips-list');
-      tipsList.innerHTML = '';
-      
-      if (!tips || tips.length === 0) {
-        const li = document.createElement('li');
-        li.textContent = '코드 품질이 양호합니다';
-        tipsList.appendChild(li);
-        return;
-      }
-      
-      tips.forEach(tip => {
-        const li = document.createElement('li');
-        li.textContent = tip;
-        tipsList.appendChild(li);
-      });
-    }
-
-    async function requestReview() {
-      if (isReviewing || !editor) return;
-      
-      isReviewing = true;
-      reviewCount++;
-      
-      const button = document.getElementById('review-button');
-      button.classList.add('loading');
-      button.textContent = 'AI 심사 중...';
-      
-      updateJudgeState(50);
-      document.getElementById('verdict').textContent = 'AI가 코드를 분석하고 있습니다...';
-      
-      try {
-        const response = await fetch('/api/review/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: editor.getValue() })
-        });
-        
-        const data = await response.json();
-        
-        document.getElementById('readability-score').textContent = data.readability;
-        document.getElementById('performance-score').textContent = data.performance;
-        document.getElementById('anger-score').textContent = data.aiAnger;
-        
-        updateProgressBar('readability-bar', data.readability);
-        updateProgressBar('performance-bar', data.performance);
-        updateProgressBar('anger-bar', data.aiAnger);
-        
-        updateJudgeState(data.aiAnger);
-        
-        const qualityScore = updateQualityScore(data.readability, data.performance, data.aiAnger);
-        
-        document.getElementById('verdict').textContent = data.message;
-        
-        updateTipsList(data.tips);
-        
-        addReviewHistory(`품질 점수: ${qualityScore}, 라인 수: ${data.lines}`);
-        
-        let scoreBonus = 0;
-        if (qualityScore >= 90) {
-          scoreBonus = 300;
-        } else if (qualityScore >= 80) {
-          scoreBonus = 200;
-        } else if (qualityScore >= 70) {
-          scoreBonus = 100;
-        } else if (qualityScore >= 60) {
-          scoreBonus = 50;
-        } else {
-          scoreBonus = -50;
+    nightmare: `public class DataProcessor {
+    public static void processData(String data) {
+        String[] parts = data.split(",");
+        List<String> results = new ArrayList<>();
+        for(int i = 0; i < parts.length; i++) {
+            if(parts[i] != null) {
+                if(!parts[i].isEmpty()) {
+                    if(parts[i].contains("@")) {
+                        if(parts[i].indexOf("@") > 0) {
+                            if(parts[i].substring(parts[i].indexOf("@")).contains(".")) {
+                                String processed = parts[i].toLowerCase().trim();
+                                if(processed.length() > 5) {
+                                    for(int j = 0; j < processed.length(); j++) {
+                                        if(Character.isDigit(processed.charAt(j))) {
+                                            processed = processed.substring(0, j) + "*" + processed.substring(j + 1);
+                                        }
+                                    }
+                                    results.add(processed);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        
-        if (window.ghcAddScore) {
-          window.ghcAddScore(scoreBonus);
-        }
-        
-        if (window.ghcUnlock) {
-          if (reviewCount === 1) {
-            window.ghcUnlock('first-review', '첫 리뷰', 'good');
-          }
-          if (qualityScore >= 95) {
-            window.ghcUnlock('perfect-code', '완벽한 코드', 'good');
-          }
-          if (data.aiAnger <= 10) {
-            window.ghcUnlock('ai-charmer', 'AI 매혹자', 'good');
-          }
-          if (data.aiAnger >= 90) {
-            window.ghcUnlock('ai-torturer', 'AI 고문관', 'bad');
-          }
-          if (reviewCount >= 10) {
-            window.ghcUnlock('review-veteran', '리뷰 베테랑', 'good');
-          }
-        }
-        
-      } catch (error) {
-        console.error('리뷰 요청 실패:', error);
-        document.getElementById('verdict').textContent = '리뷰 서버에 연결할 수 없습니다';
-        updateJudgeState(100);
-        addReviewHistory('리뷰 요청 실패');
-      } finally {
-        button.classList.remove('loading');
-        button.textContent = '🔍 REQUEST REVIEW';
-        isReviewing = false;
-      }
+        System.out.println(results.toString());
     }
+}`,
+    legacy: `public class LegacySystem {
+    public static Map processRequest(String req, String type, boolean flag, int mode) {
+        Map result = new HashMap();
+        String[] data = req.split(";");
+        for(int i = 0; i < data.length; i++) {
+            String item = data[i];
+            if(type.equals("A")) {
+                if(flag) {
+                    if(mode == 1) {
+                        result.put("key" + i, item.toUpperCase());
+                    } else if(mode == 2) {
+                        result.put("key" + i, item.toLowerCase());
+                    } else {
+                        result.put("key" + i, item);
+                    }
+                } else {
+                    result.put("key" + i, item.trim());
+                }
+            } else if(type.equals("B")) {
+                result.put("data_" + i, item.length());
+            } else {
+                result.put(i, item.hashCode());
+            }
+        }
+        return result;
+    }
+}`
+  };
 
-    document.addEventListener('DOMContentLoaded', () => {
-      createCodeParticles();
-      initializeEditor();
-      
-      if (window.ghcMountHUD) {
-        window.ghcMountHUD({ showHome: true });
-      }
-      
-      document.getElementById('review-button').addEventListener('click', requestReview);
-      
-      document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'Enter') {
-          e.preventDefault();
-          requestReview();
-        }
-      });
-      
-      if (localStorage.getItem('reviewGameVisited') !== '1') {
-        localStorage.setItem('reviewGameVisited', '1');
-        if (window.ghcUnlock) {
-          window.ghcUnlock('review-beginner', '리뷰 입문', 'good');
-        }
+  require.config({
+    paths: {
+      'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs'
+    }
+  });
+
+  require(['vs/editor/editor.main'], function() {
+    editor = monaco.editor.create(document.getElementById('editor'), {
+      value: codeTemplates.basic,
+      language: "java",
+      theme: "vs-dark",
+      automaticLayout: true,
+      lineNumbers: 'on',
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false
+    });
+
+    editor.onDidChangeModelContent(() => {
+      updateCodeStats();
+      if (document.getElementById('auto-review').checked) {
+        debounceAutoReview();
       }
     });
-  </script>
+
+    startChallenge();
+  });
+
+  function loadTemplate(templateName) {
+    if (editor && codeTemplates[templateName]) {
+      editor.setValue(codeTemplates[templateName]);
+      updateCodeStats();
+    }
+  }
+
+  function updateCodeStats() {
+    const code = editor.getValue();
+    const lines = code.split('\n').length;
+    const functionCount = (code.match(/public\s+\w+\s+\w+\s*\(/g) || []).length;
+    const complexity = calculateComplexity(code);
+
+    document.getElementById('line-count').textContent = lines;
+    document.getElementById('function-count').textContent = functionCount;
+    document.getElementById('complexity').textContent = complexity;
+  }
+
+  function calculateComplexity(code) {
+    let complexity = 1;
+    const patterns = ['if\\s*\\(', 'while\\s*\\(', 'for\\s*\\(', 'catch\\s*\\(', '\\?\\s*:', '&&', '\\|\\|'];
+    patterns.forEach(pattern => {
+      const matches = code.match(new RegExp(pattern, 'g'));
+      if (matches) complexity += matches.length;
+    });
+    return complexity;
+  }
+
+  function debounceAutoReview() {
+    clearTimeout(autoReviewTimer);
+    autoReviewTimer = setTimeout(requestReview, 1500);
+  }
+
+  function toggleAutoReview() {
+    const isEnabled = document.getElementById('auto-review').checked;
+    if (!isEnabled) {
+      clearTimeout(autoReviewTimer);
+    }
+  }
+
+  function requestReview() {
+    const reviewBtn = document.getElementById('review-btn');
+    reviewBtn.disabled = true;
+    reviewBtn.textContent = '🔄 분석중...';
+
+    reviewCount++;
+    document.getElementById('review-count').textContent = reviewCount;
+
+    fetch("/api/review/analyze", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({code: editor.getValue()})
+    })
+    .then(r => r.json())
+    .then(data => {
+      updateBattleResult(data);
+      
+      setTimeout(() => {
+        reviewBtn.disabled = false;
+        reviewBtn.textContent = '🔍 AI 리뷰 요청';
+      }, 1000);
+    })
+    .catch(() => {
+      reviewBtn.disabled = false;
+      reviewBtn.textContent = '🔍 AI 리뷰 요청';
+    });
+  }
+
+  function updateBattleResult(data) {
+    updateMeter('readability', data.readability);
+    updateMeter('performance', data.performance);
+    updateMeter('ai-anger', data.aiAnger);
+
+    const avatar = document.getElementById('ai-avatar');
+    const message = document.getElementById('result-message');
+    const score = document.getElementById('result-score');
+
+    if (data.aiAnger < 30) {
+      avatar.textContent = '😊';
+    } else if (data.aiAnger < 60) {
+      avatar.textContent = '😐';
+    } else if (data.aiAnger < 80) {
+      avatar.textContent = '😠';
+    } else {
+      avatar.textContent = '🤬';
+    }
+
+    message.textContent = data.message;
+
+    const totalScore = calculateBattleScore(data);
+    score.textContent = `전투 점수: ${totalScore}`;
+    score.className = `result-score ${totalScore > 0 ? 'score-positive' : totalScore < 0 ? 'score-negative' : 'score-neutral'}`;
+
+    updateTips(data.tips || []);
+
+    if (challengeActive) {
+      checkChallengeComplete(data);
+    }
+
+    if (totalScore !== 0) {
+      ghcAddScore(totalScore);
+    }
+  }
+
+  function updateMeter(type, value) {
+    const valueEl = document.getElementById(`${type}-value`);
+    const fillEl = document.getElementById(`${type}-fill`);
+    
+    valueEl.textContent = value;
+    fillEl.style.width = Math.min(100, Math.max(0, value)) + '%';
+  }
+
+  function updateTips(tips) {
+    const tipsList = document.getElementById('tips-list');
+    if (tips.length === 0) {
+      tipsList.innerHTML = '<li>코드가 깔끔합니다! 👍</li>';
+    } else {
+      tipsList.innerHTML = tips.map(tip => `<li>${tip}</li>`).join('');
+    }
+  }
+
+  function calculateBattleScore(data) {
+    let score = 0;
+    
+    score += Math.max(0, data.readability - 50) * 0.5;
+    score += Math.max(0, data.performance - 50) * 0.5;
+    score -= Math.max(0, data.aiAnger - 30) * 0.8;
+    
+    if (challengeActive && data.readability >= 80 && data.performance >= 80 && data.aiAnger <= 20) {
+      score += 100;
+    }
+    
+    if (reviewCount > 5) {
+      score -= (reviewCount - 5) * 5;
+    }
+    
+    return Math.round(score);
+  }
+
+  function startChallenge() {
+    challengeActive = true;
+    timeLeft = 60;
+    reviewCount = 0;
+    
+    document.getElementById('review-count').textContent = '0';
+    
+    challengeTimer = setInterval(() => {
+      timeLeft--;
+      document.getElementById('battle-timer').textContent = timeLeft + 's';
+      
+      if (timeLeft <= 0) {
+        endChallenge(false);
+      }
+    }, 1000);
+  }
+
+  function checkChallengeComplete(data) {
+    if (data.readability >= 80 && data.performance >= 80 && data.aiAnger <= 20) {
+      endChallenge(true);
+    }
+  }
+
+  function endChallenge(success) {
+    challengeActive = false;
+    clearInterval(challengeTimer);
+    
+    const message = document.getElementById('result-message');
+    
+    if (success) {
+      message.textContent = '🏆 챌린지 성공! 완벽한 리팩토링!';
+      ghcAddScore(200);
+      ghcUnlock('refactor-master', '리팩토링 마스터', 'good');
+    } else {
+      message.textContent = '⏰ 시간 초과! 챌린지 실패...';
+      ghcAddScore(-50);
+    }
+    
+    setTimeout(() => {
+      startChallenge();
+    }, 3000);
+  }
+
+  updateCodeStats();
+</script>
 </body>
 </html>

@@ -7,97 +7,135 @@ import java.util.*;
 @RequestMapping("/api/tsunami")
 public class TsunamiApi {
 
-    public static class GameResult {
-        public int score;
+    public static class WaveRequest {
         public int wave;
-        public int totalCommits;
-        public int successfulReverts;
-        public int maxCombo;
-        public int timePlayedMs;
-    }
-
-    public static class CommitAction {
-        public String commitId;
-        public String commitType;
+        public int score;
+        public int combo;
         public String action;
+        public String commitType;
     }
 
-    @PostMapping("/end-game")
-    public Map<String, Object> endGame(@RequestBody GameResult result) {
+    @PostMapping("/start")
+    public Map<String, Object> startWave(@RequestBody WaveRequest req) {
         Map<String, Object> res = new HashMap<>();
+        int wave = Math.max(1, req.wave);
         
-        int successRate = result.totalCommits > 0 ? 
-            (result.successfulReverts * 100) / result.totalCommits : 0;
+        res.put("success", true);
+        res.put("message", "Wave " + wave + " 시작!");
+        res.put("wave", wave);
+        res.put("speed", 1.0 + (wave * 0.3));
+        res.put("spawnRate", Math.max(500, 2000 - (wave * 100)));
+        res.put("hint", "나쁜 커밋을 클릭해서 revert하세요!");
         
-        int finalScore = result.score;
-        String message;
-        String achievement = null;
+        return res;
+    }
+
+    @PostMapping("/click")
+    public Map<String, Object> handleClick(@RequestBody WaveRequest req) {
+        Map<String, Object> res = new HashMap<>();
+        String commitType = req.commitType;
+        int combo = Math.max(0, req.combo);
+        int score = Math.max(0, req.score);
         
-        if (result.score > 2000) {
-            message = "쓰나미 마스터! 완벽한 커밋 관리!";
-            achievement = "tsunami-master";
-            finalScore += 200;
-        } else if (result.score > 1000) {
-            message = "훌륭한 대응! 대부분의 쓰나미를 막았습니다!";
-            achievement = "wave-defender";
-            finalScore += 100;
-        } else if (result.score > 500) {
-            message = "나쁘지 않네요. 연습이 더 필요합니다.";
+        if ("bad".equals(commitType)) {
+            int basePoints = 10;
+            int comboBonus = combo * 2;
+            int totalPoints = basePoints + comboBonus;
+            
+            res.put("success", true);
+            res.put("message", "커밋 revert 성공!");
+            res.put("scoreGain", totalPoints);
+            res.put("newCombo", combo + 1);
+            res.put("hint", "git revert " + generateCommitHash());
+            
+            if ((combo + 1) % 5 == 0) {
+                res.put("bonusMessage", "COMBO BONUS! +50");
+                res.put("comboBonus", 50);
+            }
+            
+        } else if ("good".equals(commitType)) {
+            res.put("success", false);
+            res.put("message", "좋은 커밋을 되돌렸습니다! 생명력 -1");
+            res.put("scoreGain", -20);
+            res.put("newCombo", 0);
+            res.put("hint", "좋은 커밋은 피해야 합니다!");
+            res.put("lifeLost", true);
+            
         } else {
-            message = "코드 히스토리가 완전히 휘발되었습니다...";
-            achievement = "history-destroyer";
+            res.put("success", false);
+            res.put("message", "알 수 없는 커밋 타입");
+            res.put("scoreGain", 0);
+            res.put("newCombo", combo);
         }
-        
-        if (result.maxCombo >= 20) {
-            achievement = "combo-king";
-            message += " 놀라운 콤보!";
-            finalScore += 150;
-        }
-        
-        if (result.wave >= 10) {
-            achievement = "endurance-champion";
-            message += " 지구력 챔피언!";
-            finalScore += 100;
-        }
-        
-        res.put("success", result.score > 500);
-        res.put("message", message);
-        res.put("finalScore", finalScore);
-        res.put("scoreDiff", finalScore - result.score);
-        res.put("successRate", successRate);
-        res.put("achievement", achievement);
-        res.put("stats", Map.of(
-            "totalCommits", result.totalCommits,
-            "successfulReverts", result.successfulReverts,
-            "maxCombo", result.maxCombo,
-            "finalWave", result.wave,
-            "survivalTime", result.timePlayedMs / 1000 + "초"
-        ));
         
         return res;
     }
 
-    @GetMapping("/commit-templates")
-    public Map<String, Object> getCommitTemplates() {
+    @PostMapping("/miss")
+    public Map<String, Object> handleMiss(@RequestBody WaveRequest req) {
         Map<String, Object> res = new HashMap<>();
+        String commitType = req.commitType;
         
-        List<Map<String, String>> goodCommits = Arrays.asList(
-            Map.of("hash", "a1b2c3d", "message", "feat: add user authentication", "author", "alice"),
-            Map.of("hash", "e4f5g6h", "message", "fix: resolve memory leak", "author", "bob"),
-            Map.of("hash", "i7j8k9l", "message", "docs: update README", "author", "charlie"),
-            Map.of("hash", "m0n1o2p", "message", "test: add unit tests", "author", "diana")
-        );
-        
-        List<Map<String, String>> badCommits = Arrays.asList(
-            Map.of("hash", "deadbee", "message", "console.log everywhere lol", "author", "intern"),
-            Map.of("hash", "badc0de", "message", "quick fix dont review", "author", "rushed_dev"),
-            Map.of("hash", "f00ba4", "message", "TODO: fix this later", "author", "lazy_coder"),
-            Map.of("hash", "1337h4x", "message", "rm -rf / just kidding", "author", "script_kiddie")
-        );
-        
-        res.put("good", goodCommits);
-        res.put("bad", badCommits);
+        if ("bad".equals(commitType)) {
+            res.put("success", false);
+            res.put("message", "나쁜 커밋이 프로덕션에 배포되었습니다!");
+            res.put("scoreGain", -30);
+            res.put("newCombo", 0);
+            res.put("hint", "빠르게 revert해야 합니다!");
+            res.put("lifeLost", true);
+        } else {
+            res.put("success", true);
+            res.put("message", "좋은 커밋이 안전하게 통과했습니다");
+            res.put("scoreGain", 5);
+            res.put("newCombo", req.combo);
+        }
         
         return res;
+    }
+
+    @PostMapping("/end")
+    public Map<String, Object> endGame(@RequestBody WaveRequest req) {
+        Map<String, Object> res = new HashMap<>();
+        int finalScore = Math.max(0, req.score);
+        int wave = Math.max(1, req.wave);
+        
+        String rank;
+        String message;
+        
+        if (finalScore >= 2000) {
+            rank = "Git Master";
+            message = "완벽한 revert 컨트롤!";
+        } else if (finalScore >= 1000) {
+            rank = "Senior Developer";
+            message = "숙련된 Git 사용자";
+        } else if (finalScore >= 500) {
+            rank = "Junior Developer";
+            message = "기본기는 탄탄합니다";
+        } else {
+            rank = "Intern";
+            message = "더 연습이 필요해요";
+        }
+        
+        res.put("success", finalScore >= 500);
+        res.put("message", message);
+        res.put("rank", rank);
+        res.put("finalScore", finalScore);
+        res.put("maxWave", wave);
+        res.put("scoreDiff", Math.min(200, finalScore / 10));
+        res.put("hint", "git log --oneline으로 커밋 히스토리 확인");
+        
+        return res;
+    }
+
+    private String generateCommitHash() {
+        String chars = "0123456789abcdef";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        
+        for (int i = 0; i < 7; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        
+        return sb.toString();
     }
 }

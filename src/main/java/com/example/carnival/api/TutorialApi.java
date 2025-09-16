@@ -7,172 +7,261 @@ import java.util.*;
 @RequestMapping("/api/tutorial")
 public class TutorialApi {
 
-    public static class LessonProgress {
+    public static class ProgressRequest {
         public String lessonId;
-        public boolean completed;
-        public int score;
-        public Map<String, Object> quizAnswers;
+        public String action;
+        public int quizAnswer;
+        public Map<String, Boolean> progress;
     }
 
-    public static class OverallProgress {
-        public Map<String, Boolean> completedLessons;
-        public int totalScore;
-        public int completionPercentage;
-    }
+    private static final Map<String, Map<String, Object>> LESSONS = new HashMap<>();
+    
+    static {
+        Map<String, Object> basics = new HashMap<>();
+        basics.put("id", "basics");
+        basics.put("title", "Git 기초");
+        basics.put("icon", "📖");
+        basics.put("difficulty", 1);
+        basics.put("points", 100);
+        basics.put("quiz", Map.of(
+            "question", "Git의 세 가지 주요 영역이 아닌 것은?",
+            "options", Arrays.asList("Working Directory", "Staging Area", "Git Repository", "Backup Directory"),
+            "correct", 3
+        ));
+        LESSONS.put("basics", basics);
 
-    @PostMapping("/complete-lesson")
-    public Map<String, Object> completeLesson(@RequestBody LessonProgress progress) {
-        Map<String, Object> res = new HashMap<>();
-        
-        int baseScore = 100;
-        int bonusScore = 0;
-        
-        if (progress.quizAnswers != null) {
-            int correctAnswers = 0;
-            for (Object answer : progress.quizAnswers.values()) {
-                if (Boolean.TRUE.equals(answer)) {
-                    correctAnswers++;
-                }
-            }
-            bonusScore = correctAnswers * 25;
-        }
-        
-        int finalScore = baseScore + bonusScore;
-        
-        res.put("success", true);
-        res.put("message", "레슨 완료! 학습을 축하합니다!");
-        res.put("lessonId", progress.lessonId);
-        res.put("earnedScore", finalScore);
-        res.put("bonusScore", bonusScore);
-        
-        String achievement = checkAchievement(progress.lessonId);
-        if (achievement != null) {
-            res.put("achievement", achievement);
-        }
-        
-        return res;
-    }
+        Map<String, Object> addCommit = new HashMap<>();
+        addCommit.put("id", "add-commit");
+        addCommit.put("title", "Add & Commit");
+        addCommit.put("icon", "💾");
+        addCommit.put("difficulty", 2);
+        addCommit.put("points", 150);
+        addCommit.put("practiceGame", "push");
+        LESSONS.put("add-commit", addCommit);
 
-    @GetMapping("/progress")
-    public Map<String, Object> getProgress() {
-        Map<String, Object> res = new HashMap<>();
-        
-        Map<String, Boolean> completedLessons = new HashMap<>();
-        completedLessons.put("basics", false);
-        completedLessons.put("add-commit", false);
-        completedLessons.put("branches", false);
-        completedLessons.put("merge-rebase", false);
-        completedLessons.put("cherry-pick", false);
-        completedLessons.put("stash", false);
-        completedLessons.put("reset", false);
-        
-        res.put("completedLessons", completedLessons);
-        res.put("totalScore", 0);
-        res.put("completionPercentage", 0);
-        res.put("currentLesson", "basics");
-        
-        return res;
-    }
+        Map<String, Object> branches = new HashMap<>();
+        branches.put("id", "branches");
+        branches.put("title", "브랜치");
+        branches.put("icon", "🌿");
+        branches.put("difficulty", 3);
+        branches.put("points", 200);
+        LESSONS.put("branches", branches);
 
-    @PostMapping("/quiz-answer")
-    public Map<String, Object> submitQuizAnswer(@RequestBody Map<String, Object> answer) {
-        String lessonId = (String) answer.get("lessonId");
-        int selectedOption = (Integer) answer.get("selectedOption");
-        int correctOption = (Integer) answer.get("correctOption");
-        
-        Map<String, Object> res = new HashMap<>();
-        boolean isCorrect = selectedOption == correctOption;
-        
-        res.put("correct", isCorrect);
-        res.put("selectedOption", selectedOption);
-        res.put("correctOption", correctOption);
-        
-        if (isCorrect) {
-            res.put("message", "정답입니다! 잘 이해하고 계시네요.");
-            res.put("scoreEarned", 25);
-        } else {
-            res.put("message", getExplanation(lessonId, correctOption));
-            res.put("scoreEarned", 0);
-        }
-        
-        return res;
+        Map<String, Object> mergeRebase = new HashMap<>();
+        mergeRebase.put("id", "merge-rebase");
+        mergeRebase.put("title", "Merge & Rebase");
+        mergeRebase.put("icon", "🔄");
+        mergeRebase.put("difficulty", 4);
+        mergeRebase.put("points", 250);
+        mergeRebase.put("practiceGame", "merge");
+        LESSONS.put("merge-rebase", mergeRebase);
+
+        Map<String, Object> cherryPick = new HashMap<>();
+        cherryPick.put("id", "cherry-pick");
+        cherryPick.put("title", "Cherry Pick");
+        cherryPick.put("icon", "🍒");
+        cherryPick.put("difficulty", 3);
+        cherryPick.put("points", 200);
+        cherryPick.put("practiceGame", "cherrypick");
+        LESSONS.put("cherry-pick", cherryPick);
+
+        Map<String, Object> stash = new HashMap<>();
+        stash.put("id", "stash");
+        stash.put("title", "Stash");
+        stash.put("icon", "📦");
+        stash.put("difficulty", 2);
+        stash.put("points", 150);
+        stash.put("practiceGame", "stash");
+        LESSONS.put("stash", stash);
+
+        Map<String, Object> reset = new HashMap<>();
+        reset.put("id", "reset");
+        reset.put("title", "Reset");
+        reset.put("icon", "🔥");
+        reset.put("difficulty", 5);
+        reset.put("points", 300);
+        reset.put("practiceGame", "reset");
+        LESSONS.put("reset", reset);
     }
 
     @GetMapping("/lessons")
     public Map<String, Object> getLessons() {
-        Map<String, Object> res = new HashMap<>();
-        
-        List<Map<String, Object>> lessons = Arrays.asList(
-            createLesson("basics", "📖", "Git 기초", "버전 관리의 개념과 Git의 기본 구조"),
-            createLesson("add-commit", "💾", "Add & Commit", "파일을 스테이징하고 커밋하는 방법"),
-            createLesson("branches", "🌿", "브랜치", "브랜치를 생성하고 관리하는 방법"),
-            createLesson("merge-rebase", "🔄", "Merge & Rebase", "브랜치를 병합하는 두 가지 방법"),
-            createLesson("cherry-pick", "🍒", "Cherry Pick", "특정 커밋만 선택해서 가져오기"),
-            createLesson("stash", "📦", "Stash", "작업 중인 변경사항을 임시 저장"),
-            createLesson("reset", "🔥", "Reset", "Git의 가장 위험하지만 강력한 명령어")
-        );
-        
-        res.put("lessons", lessons);
-        res.put("totalLessons", lessons.size());
-        
-        return res;
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("lessons", LESSONS.values());
+        response.put("totalLessons", LESSONS.size());
+        return response;
     }
 
-    @GetMapping("/stats")
-    public Map<String, Object> getStats() {
-        Map<String, Object> res = new HashMap<>();
+    @GetMapping("/lesson/{id}")
+    public Map<String, Object> getLesson(@PathVariable String id) {
+        Map<String, Object> response = new HashMap<>();
         
-        res.put("totalUsers", 0);
-        res.put("completedTutorials", 0);
-        res.put("averageScore", 0);
-        res.put("mostDifficultLesson", "");
-        res.put("easiestLesson", "");
-        
-        Map<String, Integer> lessonCompletionRates = new HashMap<>();
-        lessonCompletionRates.put("basics", 0);
-        lessonCompletionRates.put("add-commit", 0);
-        lessonCompletionRates.put("branches", 0);
-        lessonCompletionRates.put("merge-rebase", 0);
-        lessonCompletionRates.put("cherry-pick", 0);
-        lessonCompletionRates.put("stash", 0);
-        lessonCompletionRates.put("reset", 0);
-        
-        res.put("lessonCompletionRates", lessonCompletionRates);
-        
-        return res;
-    }
-
-    private Map<String, Object> createLesson(String id, String icon, String title, String description) {
-        Map<String, Object> lesson = new HashMap<>();
-        lesson.put("id", id);
-        lesson.put("icon", icon);
-        lesson.put("title", title);
-        lesson.put("description", description);
-        lesson.put("completed", false);
-        lesson.put("available", id.equals("basics"));
-        return lesson;
-    }
-
-    private String checkAchievement(String lessonId) {
-        switch (lessonId) {
-            case "basics":
-                return "first-lesson";
-            case "reset":
-                return "danger-zone";
-            default:
-                return null;
+        if (!LESSONS.containsKey(id)) {
+            response.put("success", false);
+            response.put("message", "존재하지 않는 레슨입니다");
+            return response;
         }
+        
+        response.put("success", true);
+        response.put("lesson", LESSONS.get(id));
+        response.put("hint", "차근차근 따라해보세요");
+        
+        return response;
     }
 
-    private String getExplanation(String lessonId, int correctOption) {
-        Map<String, Map<Integer, String>> explanations = new HashMap<>();
+    @PostMapping("/complete")
+    public Map<String, Object> completeLesson(@RequestBody ProgressRequest req) {
+        Map<String, Object> response = new HashMap<>();
         
-        Map<Integer, String> basicsExplanations = new HashMap<>();
-        basicsExplanations.put(1, "Working Directory, Staging Area, Git Repository가 Git의 세 가지 주요 영역입니다.");
+        if (!LESSONS.containsKey(req.lessonId)) {
+            response.put("success", false);
+            response.put("message", "존재하지 않는 레슨입니다");
+            return response;
+        }
         
-        explanations.put("basics", basicsExplanations);
+        Map<String, Object> lesson = LESSONS.get(req.lessonId);
+        int points = (Integer) lesson.get("points");
+        String title = (String) lesson.get("title");
         
-        return explanations.getOrDefault(lessonId, new HashMap<>())
-                          .getOrDefault(correctOption, "다시 한 번 학습 내용을 확인해보세요.");
+        response.put("success", true);
+        response.put("message", title + " 학습을 완료했습니다!");
+        response.put("scoreDiff", points);
+        response.put("hint", "다음 레슨으로 넘어가세요");
+        
+        Map<String, String> achievement = checkAchievements(req.lessonId, req.progress);
+        if (achievement != null) {
+            response.put("achievement", achievement);
+        }
+        
+        return response;
+    }
+
+    @PostMapping("/quiz")
+    public Map<String, Object> submitQuiz(@RequestBody ProgressRequest req) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (!LESSONS.containsKey(req.lessonId)) {
+            response.put("success", false);
+            response.put("message", "존재하지 않는 레슨입니다");
+            return response;
+        }
+        
+        Map<String, Object> lesson = LESSONS.get(req.lessonId);
+        Map<String, Object> quiz = (Map<String, Object>) lesson.get("quiz");
+        
+        if (quiz == null) {
+            response.put("success", false);
+            response.put("message", "이 레슨에는 퀴즈가 없습니다");
+            return response;
+        }
+        
+        int correctAnswer = (Integer) quiz.get("correct");
+        boolean isCorrect = req.quizAnswer == correctAnswer;
+        
+        response.put("success", isCorrect);
+        response.put("correct", isCorrect);
+        response.put("correctAnswer", correctAnswer);
+        
+        if (isCorrect) {
+            response.put("message", "정답입니다! 🎉");
+            response.put("scoreDiff", 50);
+            response.put("hint", "git 명령어를 잘 이해하고 있네요!");
+        } else {
+            response.put("message", "틀렸습니다. 다시 시도해보세요!");
+            response.put("scoreDiff", 0);
+            response.put("hint", "레슨 내용을 다시 한번 읽어보세요");
+        }
+        
+        return response;
+    }
+
+    @PostMapping("/practice")
+    public Map<String, Object> linkPractice(@RequestBody ProgressRequest req) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (!LESSONS.containsKey(req.lessonId)) {
+            response.put("success", false);
+            response.put("message", "존재하지 않는 레슨입니다");
+            return response;
+        }
+        
+        Map<String, Object> lesson = LESSONS.get(req.lessonId);
+        String practiceGame = (String) lesson.get("practiceGame");
+        
+        if (practiceGame == null) {
+            response.put("success", false);
+            response.put("message", "이 레슨에는 실습 게임이 없습니다");
+            return response;
+        }
+        
+        response.put("success", true);
+        response.put("message", "실습 게임으로 이동합니다");
+        response.put("gameUrl", "/game/" + practiceGame);
+        response.put("hint", "게임을 통해 배운 내용을 연습해보세요!");
+        
+        return response;
+    }
+
+    @GetMapping("/progress/{totalCompleted}")
+    public Map<String, Object> getProgress(@PathVariable int totalCompleted) {
+        Map<String, Object> response = new HashMap<>();
+        
+        int totalLessons = LESSONS.size();
+        int progressPercent = Math.round((float) totalCompleted / totalLessons * 100);
+        
+        response.put("success", true);
+        response.put("totalCompleted", totalCompleted);
+        response.put("totalLessons", totalLessons);
+        response.put("progressPercent", progressPercent);
+        
+        String rank = calculateRank(progressPercent);
+        response.put("rank", rank);
+        response.put("message", "현재 진행률: " + progressPercent + "%");
+        
+        return response;
+    }
+
+    private Map<String, String> checkAchievements(String lessonId, Map<String, Boolean> progress) {
+        if (progress == null) return null;
+        
+        int completed = 0;
+        for (Boolean value : progress.values()) {
+            if (value != null && value) completed++;
+        }
+        
+        Map<String, String> achievement = new HashMap<>();
+        
+        if ("basics".equals(lessonId)) {
+            achievement.put("id", "first-lesson");
+            achievement.put("name", "첫 수업");
+            achievement.put("type", "good");
+            return achievement;
+        }
+        
+        if (completed >= LESSONS.size()) {
+            achievement.put("id", "git-master");
+            achievement.put("name", "Git 마스터");
+            achievement.put("type", "good");
+            return achievement;
+        }
+        
+        if (completed >= 3) {
+            achievement.put("id", "learning-streak");
+            achievement.put("name", "학습왕");
+            achievement.put("type", "good");
+            return achievement;
+        }
+        
+        return null;
+    }
+
+    private String calculateRank(int progressPercent) {
+        if (progressPercent >= 100) return "Git Master";
+        if (progressPercent >= 80) return "Senior Developer";
+        if (progressPercent >= 60) return "Developer";
+        if (progressPercent >= 40) return "Junior Developer";
+        if (progressPercent >= 20) return "Intern";
+        return "Beginner";
     }
 }

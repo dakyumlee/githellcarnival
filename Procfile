@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar target/git-hell-carnival-1.0.0.jar
+web: java -jar target/git-hell-carnival-1.0.0.jar
