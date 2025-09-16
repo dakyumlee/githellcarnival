@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>⚔️ Merge vs Rebase</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Pretendard, sans-serif;
+      margin: 0;
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2.2rem;
+      text-align: center;
+    }
+
+    .sub {
+      text-align: center;
+      color: #bbb;
+      margin-bottom: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: #1e1e1e;
+      border: 1px solid #2e2e2e;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 0;
+    }
+
+    input[type=range] {
+      width: 220px;
+    }
+
+    .btn {
+      background: #e74c3c;
+      border: none;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #c0392b;
+    }
+
+    .seg {
+      display: flex;
+      gap: 10px;
+    }
+
+    .opt {
+      flex: 1;
+      background: #232323;
+      border: 1px solid #343434;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .opt.active {
+      outline: 2px solid #6ea8ff;
+      background: #21293a;
+    }
+
+    pre {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 12px;
+      white-space: pre-wrap;
+      min-height: 90px;
+    }
+
+    .npc {
+      margin-top: 8px;
+      color: #ccc;
+    }
+
+    .k {
+      font-weight: 700;
+    }
+
+    .back {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      background: #333;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="/">← 로비</a>
+  <div class="wrap">
+    <h1>⚔️ Merge vs Rebase</h1>
+    <div class="sub">상황에 맞는 전략을 선택하세요</div>
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <div class="k">내 브랜치가 앞선 커밋</div>
+          <input id="local" type="range" min="0" max="6" value="2">
+          <span id="localv">2</span>
+        </div>
+        <div class="row">
+          <div class="k">main이 앞선 커밋</div>
+          <input id="remote" type="range" min="0" max="6" value="2">
+          <span id="remotev">2</span>
+        </div>
+        <div class="row">
+          <label>
+            <input id="linear" type="checkbox" checked> 팀은 직선 히스토리를 선호
+          </label>
+        </div>
+        <div class="seg">
+          <div class="opt active" data-s="merge">Merge</div>
+          <div class="opt" data-s="rebase">Rebase</div>
+        </div>
+        <div class="row">
+          <button class="btn" id="run">실행</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="k">브랜치 다이어그램</div>
+        <pre id="diagram"></pre>
+        <div id="msg" style="margin-top:6px;font-size:18px"></div>
+        <div id="hint" style="color:#bbb;margin-top:6px"></div>
+        <div id="npc" class="npc"></div>
+        <div id="score" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const local = document.getElementById("local");
+    const remote = document.getElementById("remote");
+    const localv = document.getElementById("localv");
+    const remotev = document.getElementById("remotev");
+    const opts = [...document.querySelectorAll(".opt")];
+    let strategy = "merge";
+
+    function sync() {
+      localv.innerText = local.value;
+      remotev.innerText = remote.value;
+    }
+
+    opts.forEach(o => {
+      o.addEventListener("click", () => {
+        opts.forEach(x => x.classList.remove("active"));
+        o.classList.add("active");
+        strategy = o.dataset.s;
+      });
+    });
+
+    document.getElementById("run").addEventListener("click", () => {
+      const requestData = {
+        strategy,
+        localAhead: parseInt(local.value, 10),
+        remoteAhead: parseInt(remote.value, 10),
+        teamLikesLinear: document.getElementById("linear").checked
+      };
+
+      fetch("/api/merge/execute", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(requestData)
+      })
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById("diagram").innerText = d.diagram;
+        document.getElementById("msg").innerText = d.message + (d.conflicts ? ` (충돌 ${d.conflicts})` : "");
+        document.getElementById("hint").innerText = d.hint;
+        document.getElementById("npc").innerText = d.npc;
+        document.getElementById("score").innerText = "점수 변화: " + (d.scoreDiff > 0 ? `+${d.scoreDiff}` : d.scoreDiff);
+      });
+    });
+
+    local.addEventListener("input", sync);
+    remote.addEventListener("input", sync);
+    sync();
+  </script>
+</body>
+</html>

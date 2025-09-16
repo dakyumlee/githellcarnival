@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GameViewController {
 
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
     @GetMapping("/game/push")
     public String pushView() {
         return "push";
@@ -15,20 +20,29 @@ public class GameViewController {
     public String cherryPickView() {
         return "cherrypick";
     }
-    
+
     @GetMapping("/game/reset")
     public String resetView() {
         return "reset";
     }
-    
+
     @GetMapping("/game/stash")
     public String stashView() {
         return "stash";
     }
-    
+
     @GetMapping("/game/detached")
     public String detachedView() {
         return "detached";
     }
 
+    @GetMapping("/game/merge")
+    public String mergeView() {
+        return "merge";
+    }
+
+    @GetMapping("/game/review")
+    public String reviewView() {
+        return "review";
+    }
 }
